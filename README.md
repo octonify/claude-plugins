@@ -1,0 +1,57 @@
+# octonify — Claude Code plugin marketplace
+
+A small catalog of [Claude Code](https://code.claude.com/docs) plugins. Adding the marketplace
+registers the catalog; installing a plugin copies that plugin into Claude Code and makes its
+skills available as `/<plugin>:<skill>`. Each plugin is versioned on its own, so installing or
+updating one has no effect on the others.
+
+## Install
+
+```
+/plugin marketplace add octonify/claude-plugins
+/plugin install project-memory@octonify
+```
+
+Later, `/plugin marketplace update octonify` refreshes the catalog and offers any plugin whose
+version has changed.
+
+## Plugins
+
+| Plugin | What it does | Install |
+|---|---|---|
+| `project-memory` | Scaffolds and audits a git-native long-term project memory structure: `CLAUDE.md`, arc42 knowledge docs, ADRs, Conventional Commits and drift checks. Skills: `/project-memory:init`, `/project-memory:audit`. | `/plugin install project-memory@octonify` |
+
+## Status of `project-memory`
+
+**Experimental, version `0.1.0`.** The documentation architecture it installs is assembled from
+published conventions — arc42, Nygard ADRs, Conventional Commits — but the way they are combined
+here, along with the numeric budgets, the confidence markers, the `covers_paths` drift check and
+the three-tier durability model, is a proposal that has not been validated on a real project over
+time. The version number says so on purpose.
+
+The shipped scripts have been executed against a scratch repository and against this one. The
+architecture they enforce has not been through a year of maintenance.
+
+## Releasing
+
+Per plugin, in this order:
+
+1. Change the plugin under `plugins/<name>/`.
+2. Bump `version` in `plugins/<name>/.claude-plugin/plugin.json`. **Users receive an update only
+   when this string changes.**
+3. Add a dated entry to `plugins/<name>/CHANGELOG.md`.
+4. Commit with the plugin as the scope: `feat(<name>): ...`.
+5. Tag, annotated and scoped: `git tag -a <name>-v<version> -m "..."`. Never a bare `v<version>`.
+6. `git push --follow-tags`.
+
+Working notes for this repository are in [`CLAUDE.md`](CLAUDE.md); the reasoning behind its shape
+is in [`docs/decisions/`](docs/decisions/).
+
+## Further reading
+
+The design `project-memory` implements, and the reasoning behind every default it chooses:
+[`plugins/project-memory/reference/architecture.md`](plugins/project-memory/reference/architecture.md).
+
+## License
+
+MIT. See [LICENSE](LICENSE).

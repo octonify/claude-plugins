@@ -1,0 +1,17 @@
+# Local agent scratch, never shared
+CLAUDE.local.md
+.claude/settings.local.json
+
+# OS noise
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.idea/
+.vscode/
+*.swp
+
+# Scratch space used while testing plugins locally
+/tmp/
+/scratch/

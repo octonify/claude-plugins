@@ -1,0 +1,17 @@
+---
+as_of: {{DATE}}
+basis_commit: {{COMMIT}}
+owner: {{OWNER}}
+review_trigger: a new source is consulted, or an existing one is replaced
+---
+
+# Sources
+
+Provenance register. Every source a claim can point at, and the date it was captured.
+
+| Source | Type | Location | Captured | Status |
+|---|---|---|---|---|
+| {{NAME}} | document \| repo \| person \| ticket | {{PATH_OR_URL}} | {{DATE}} | current \| superseded |
+
+Superseded sources are moved, not deleted. Knowing a claim came from a document since replaced is
+itself information, and it is the first thing wanted when the claim turns out to be wrong.

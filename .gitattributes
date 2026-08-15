@@ -1,0 +1,9 @@
+# Shell scripts and git hooks must be LF, or they fail on non-Windows machines
+# with "bad interpreter: /usr/bin/env bash^M".
+*.sh              text eol=lf
+.githooks/*       text eol=lf
+plugins/*/assets/commit-msg text eol=lf
+
+# Markdown and JSON normalise on commit, checkout native.
+*.md              text
+*.json            text

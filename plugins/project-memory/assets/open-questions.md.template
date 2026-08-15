@@ -1,0 +1,22 @@
+---
+as_of: {{DATE}}
+basis_commit: {{COMMIT}}
+owner: {{OWNER}}
+review_trigger: any source contradiction, or a needed fact with no source
+---
+
+# Open questions
+
+The negative space. First-class, not an appendix. This is not a to-do list: an open question is
+something not known, not something not yet done.
+
+| # | Question | Why it matters | Blocked on | Raised | Status |
+|---|---|---|---|---|---|
+| 1 | {{QUESTION}} | {{CONSEQUENCE_OF_NOT_KNOWING}} | {{WHAT_WOULD_ANSWER_IT}} | {{DATE}} | open |
+
+## Rules
+
+- A contradiction between two sources is an open question, not a fact to be chosen between.
+- "Nobody knows" and "it was never recorded" are valid resolutions, written down as such with the
+  date they were established.
+- Nothing leaves this file without either evidence or an explicit decision to stop asking.

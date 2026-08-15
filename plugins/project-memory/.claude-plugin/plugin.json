@@ -1,0 +1,19 @@
+{
+  "name": "project-memory",
+  "description": "Two skills for a repository's durable memory: init scaffolds the minimum viable structure and wires the enforcement hooks; audit reports drift, staleness and unsourced claims without changing anything.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Arwin",
+    "url": "https://github.com/octonify"
+  },
+  "homepage": "https://github.com/octonify/claude-plugins/tree/main/plugins/project-memory",
+  "repository": "https://github.com/octonify/claude-plugins",
+  "license": "MIT",
+  "keywords": [
+    "documentation",
+    "memory",
+    "adr",
+    "conventional-commits",
+    "arc42"
+  ]
+}

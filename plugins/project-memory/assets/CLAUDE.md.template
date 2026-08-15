@@ -1,0 +1,51 @@
+# {{PROJECT_NAME}} — agent instructions
+
+> **As of:** {{DATE}} · **Basis:** commit `{{COMMIT}}`
+
+## What this is
+
+{{TWO_OR_THREE_SENTENCES: what the system does, for whom, and its lifecycle stage.}}
+
+## Hard rules
+
+1. Budgets: `CLAUDE.md` 200 lines, `docs/knowledge/*.md` 150 lines, ADRs 60 lines,
+   `.claude/rules/*.md` 100 lines. Over budget means split by topic or delete.
+2. Accepted decision records are never edited. Supersede with a new one.
+3. Every non-obvious claim carries `[F]` fact / `[I]` inference / `[U]` unverified, plus a source
+   and a date: `[F, src/config/loader.ts:88, {{DATE}}]`.
+4. Contradictions go to `docs/knowledge/07-open-questions.md`. Do not resolve by guessing; the
+   disagreement is the finding.
+5. Do not document what can be derived from the code. No directory listings, no dependency lists.
+6. Commits follow Conventional Commits. Non-obvious implementation choices get a `Decision:`
+   trailer instead of a file.
+7. Create a knowledge file the day it has real content, not before.
+
+## Conventions
+
+- Confidence markers: `[F]` fact, stated in a named source · `[I]` inference · `[U]` unverified.
+- Knowledge files carry a frontmatter header: `as_of`, `basis_commit`, `owner`, `review_trigger`,
+  `covers_paths`. `review_trigger` is an event, not a date.
+- {{BRANCHING_AND_REVIEW_CONVENTIONS}}
+
+## Commands
+
+- Build: `{{BUILD_COMMAND}}`
+- Test: `{{TEST_COMMAND}}`
+- Lint: `{{LINT_COMMAND}}`
+- Docs drift check: `./scripts/check-docs.sh`
+- Staleness check: `./scripts/check-staleness.sh`
+- Decision log: `git log --grep='^Decision:' --pretty=format:'%h %ad %s%n%b' --date=short`
+
+## Where to look
+
+| I need... | Read |
+|---|---|
+| how it is built | `docs/knowledge/03-architecture.md` |
+| what we do not know | `docs/knowledge/07-open-questions.md` |
+| why an architectural choice was made | `docs/decisions/` |
+| why a local implementation choice was made | `git log --grep='^Decision:'` |
+{{ADD_A_ROW_ONLY_WHEN_THE_FILE_EXISTS}}
+
+## Do not
+
+- {{THINGS_THAT_LOOK_REASONABLE_BUT_ARE_WRONG_HERE, each with its one-line reason.}}

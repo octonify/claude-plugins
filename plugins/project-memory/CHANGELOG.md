@@ -55,4 +55,4 @@ turning them into real files are listed in the repository's initial commit and s
   block nor allow. It now falls back to a `sed` extraction and degrades to allow. It also
   normalises backslashes so Windows paths match the protected patterns.
 
-[0.1.0]: https://github.com/octonify/claude-plugins/releases/tag/project-memory-v0.1.0
+[0.1.0]: https://github.com/octonify/claude-plugins/releases/tag/project-memory--v0.1.0

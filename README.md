@@ -41,7 +41,8 @@ Per plugin, in this order:
    when this string changes.**
 3. Add a dated entry to `plugins/<name>/CHANGELOG.md`.
 4. Commit with the plugin as the scope: `feat(<name>): ...`.
-5. Tag, annotated and scoped: `git tag -a <name>-v<version> -m "..."`. Never a bare `v<version>`.
+5. Tag, annotated and scoped: `claude plugin tag ./plugins/<name> -m "..."`, which produces
+   `<name>--v<version>` and checks that the manifests agree. Never a bare `v<version>`.
 6. `git push --follow-tags`.
 
 Working notes for this repository are in [`CLAUDE.md`](CLAUDE.md); the reasoning behind its shape

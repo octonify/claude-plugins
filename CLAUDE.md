@@ -26,9 +26,11 @@ deliberate — see `docs/decisions/0002-generic-marketplace-name.md`.
    `marketplace.json`.** Claude Code pins an installed plugin to its `version` string. If that
    string does not change, no user receives the change, however many commits were pushed. This is
    the most likely mistake in this repository.
-2. **Git tags are scoped per plugin:** `project-memory-v0.2.0`, never a bare `v0.2.0`. One
-   repository holds several independently versioned plugins, so a bare semantic version does not
-   say what it released. Always annotated (`git tag -a`).
+2. **Git tags are scoped per plugin, with a double dash:** `project-memory--v0.2.0`, never a bare
+   `v0.2.0` and never a single dash. One repository holds several independently versioned plugins,
+   so a bare semantic version does not say what it released. `--` is the separator `claude plugin
+   tag` produces, and it cannot occur inside a kebab-case plugin name, so the tag parses in one
+   direction only. Always annotated.
 3. **Each plugin has its own `CHANGELOG.md` inside its own directory.** There is no repository-wide
    changelog.
 4. **Plugins cannot share files across directories.** Installing copies only the plugin's own
@@ -68,7 +70,11 @@ For a change to plugin `<name>`:
    whose design has not been validated in real use stays below `1.0.0`.
 3. Add a `CHANGELOG.md` entry under `plugins/<name>/` for that version, dated.
 4. Commit, scoped: `git commit -m "feat(<name>): ..."`.
-5. Tag: `git tag -a <name>-v<version> -m "<what changed, in one or two sentences>"`.
+5. Tag from the plugin directory:
+   `claude plugin tag ./plugins/<name> -m "<what changed, in one or two sentences>"`. It creates
+   `<name>--v<version>` annotated, and refuses if `plugin.json` and the marketplace entry disagree
+   on the version. The hand-written equivalent is
+   `git tag -a <name>--v<version> -m "..."`; prefer the command, for the check.
 6. Push: `git push --follow-tags`.
 
 Steps 2 and 3 are the ones that get skipped. If a change is worth pushing, it is worth a version.
@@ -80,7 +86,8 @@ Steps 2 and 3 are the ones that get skipped. If a change is worth pushing, it is
 | why one repository holds every plugin | `docs/decisions/0001-single-repository-marketplace.md` |
 | why the marketplace is called `octonify` | `docs/decisions/0002-generic-marketplace-name.md` |
 | why versions are per plugin | `docs/decisions/0003-independent-plugin-versions.md` |
-| why tags carry a plugin prefix | `docs/decisions/0004-scoped-git-tags.md` |
+| why tags carry a plugin prefix | `docs/decisions/0004-scoped-git-tags.md` (superseded) |
+| why the tag separator is `--` | `docs/decisions/0005-double-dash-tag-convention.md` |
 | what `project-memory` installs, and why | `plugins/project-memory/reference/architecture.md` |
 | the source material `project-memory` was distilled from | `project-memory-structure-template.md` |
 

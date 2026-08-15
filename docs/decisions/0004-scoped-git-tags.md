@@ -1,6 +1,6 @@
 # 0004. Git tags are scoped per plugin
 
-**Status:** accepted
+**Status:** superseded by [0005](0005-double-dash-tag-convention.md)
 **Date:** 2026-08-16
 
 ## Context

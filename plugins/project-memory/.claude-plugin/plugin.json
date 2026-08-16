@@ -1,7 +1,7 @@
 {
   "name": "project-memory",
   "description": "Two skills for a repository's durable memory: init scaffolds the minimum viable structure and wires the enforcement hooks; audit reports drift, staleness and unsourced claims without changing anything.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": {
     "name": "Arwin",
     "url": "https://github.com/octonify"

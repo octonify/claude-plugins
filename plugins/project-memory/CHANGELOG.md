@@ -8,8 +8,11 @@ below. Without that bump, no installed user receives the change.
 
 ## [Unreleased]
 
-Not released. `version` in `.claude-plugin/plugin.json` is deliberately still `0.1.0`; these
-changes reach no installed user until it is bumped.
+## [0.2.0] — 2026-08-16
+
+Fixes to the shipped scripts. Nothing in this release changes the shape of what `init` writes.
+The design remains unvalidated on a real project over time; the version stays below `1.0.0`
+deliberately.
 
 ### Fixed
 
@@ -156,7 +159,7 @@ turning them into real files are listed in the repository's initial commit and s
   last document was *not* stale. It now ends with an explicit `exit 0`.
 - Both checks died under `set -e` when the docs directory was empty or the base ref did not exist.
   They now resolve a base ref by fallback and report "nothing to check".
-  **[Wrong, as written. Corrected under `Unreleased` → `Corrected`, 2026-08-16.]** The empty-docs
+  **[Wrong, as written. Corrected under `0.2.0` → `Corrected`, 2026-08-16.]** The empty-docs
   half holds for both scripts. The base-ref half was only ever true of `check-docs.sh`:
   `check-staleness.sh` has never had a base ref of any kind. Its comparison point is each
   document's own `basis_commit`.
@@ -178,10 +181,11 @@ turning them into real files are listed in the repository's initial commit and s
 - `protect-files.sh` assumed `jq` was installed; a missing `jq` produced exit 127, which is neither
   block nor allow. It now falls back to a `sed` extraction and degrades to allow. It also
   normalises backslashes so Windows paths match the protected patterns.
-  **[Overstated, as written. Corrected under `Unreleased` → `Corrected`, 2026-08-16.]** The two
+  **[Overstated, as written. Corrected under `0.2.0` → `Corrected`, 2026-08-16.]** The two
   sentences are individually true, but together they claim the fallback matched Windows paths. It
   did not: the normalisation only ever ran on a correctly unescaped path, which meant the `jq`
   branch, and in the `sed` fallback a JSON-escaped Windows path was not matched and the write was
   allowed.
 
+[0.2.0]: https://github.com/octonify/claude-plugins/releases/tag/project-memory--v0.2.0
 [0.1.0]: https://github.com/octonify/claude-plugins/releases/tag/project-memory--v0.1.0

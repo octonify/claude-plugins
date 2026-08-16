@@ -2,7 +2,7 @@
 # Drift check: if code under a path a knowledge document claims to cover changed,
 # and the document did not, say so.
 #
-# Usage:   ./scripts/check-docs.sh [base-ref]
+# Usage:   ./.githooks/check-docs.sh [base-ref]
 #          Runs from anywhere inside the repository: the script changes to the
 #          repository root before doing anything. A relative DOCS_DIR is
 #          therefore relative to the repository root, not to the caller's
@@ -114,15 +114,15 @@ check-docs: this repository has one branch and no remote, so no base ref can
 check-docs: the check becomes meaningful as soon as there is a trunk to compare
             against - once you cut a working branch, or add a remote. Until
             then, an explicit ref is the only thing that can be compared:
-              ./scripts/check-docs.sh <ref>
+              ./.githooks/check-docs.sh <ref>
 EOF
     else
       cat >&2 <<EOF
 check-docs: no usable base ref. Tried: ${CANDIDATES}. Each was rejected above.
 check-docs: nothing was compared, so this run proves nothing. Pass the ref this
             work branched from, explicitly:
-              ./scripts/check-docs.sh <ref>
-              ./scripts/check-docs.sh HEAD~1   # last commit only; fails on a
+              ./.githooks/check-docs.sh <ref>
+              ./.githooks/check-docs.sh HEAD~1 # last commit only; fails on a
                                                # repository with one commit
 EOF
     fi

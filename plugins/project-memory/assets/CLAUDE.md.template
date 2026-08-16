@@ -36,8 +36,8 @@
 - Test: `{{TEST_COMMAND}}`
 - Lint: `{{LINT_COMMAND}}`
 - Hooks, once per clone: `git config core.hooksPath .githooks`
-- Docs drift check: `./scripts/check-docs.sh`
-- Staleness check: `./scripts/check-staleness.sh`
+- Docs drift check: `./.githooks/check-docs.sh`
+- Staleness check: `./.githooks/check-staleness.sh`
 - Decision log: `git log --grep='^Decision:' --pretty=format:'%h %ad %s%n%b' --date=short`
 
 ## Where to look
@@ -48,6 +48,8 @@
 | what we do not know | `docs/knowledge/07-open-questions.md` |
 | why an architectural choice was made | `docs/decisions/` |
 | why a local implementation choice was made | `git log --grep='^Decision:'` |
+| whether the docs drifted from the code | run `.githooks/check-docs.sh` |
+| how far behind the docs are | run `.githooks/check-staleness.sh` |
 {{ADD_A_ROW_ONLY_WHEN_THE_FILE_EXISTS}}
 
 ## Do not

@@ -25,7 +25,9 @@ Record what already exists, and read anything that does:
 - `docs/`, in particular `docs/knowledge/` and `docs/decisions/`
 - `.claude/settings.json`, `.claude/hooks/`, `.claude/rules/`
 - `.githooks/`, and `git config core.hooksPath`
-- `scripts/check-docs.sh`, `scripts/check-staleness.sh`
+- `.githooks/check-docs.sh`, `.githooks/check-staleness.sh` — and `scripts/check-docs.sh`,
+  `scripts/check-staleness.sh`, where a scaffold made by an older version of this plugin put them
+- `scripts/`, `docs/` — not to write into, but to know what the project already owns
 
 **Never overwrite an existing file.** For each collision, ask: merge, write alongside as
 `<name>.new`, or skip. Default to skip if the user does not answer.
@@ -43,6 +45,27 @@ Do not emit a file full of placeholders. Before writing `CLAUDE.md`, establish:
   section. If nothing is known yet, leave the section with a single line saying so.
 
 Note the current commit: `git rev-parse --short HEAD`. Note today's date.
+
+## The layout rule, before any file is written
+
+**Never create a top-level directory the project may already own.** The whole footprint:
+
+| What | Where |
+|---|---|
+| knowledge files, decision records | `docs/knowledge/`, `docs/decisions/` — an existing `docs/` is used; it is created only when absent, and nothing already inside it is touched |
+| `commit-msg`, `check-docs.sh`, `check-staleness.sh` | `.githooks/` — the one directory `init` creates unconditionally |
+| rules file, agent hooks, settings | `.claude/` — that namespace belongs to Claude Code, not to this plugin |
+| `CLAUDE.md`, `.gitattributes` | repository root — both are tool and git conventions and cannot live elsewhere |
+
+`init` creates no `scripts/` directory and writes nothing into an existing one: many projects
+already own `scripts/` for build and deploy tooling, and documentation checks in it are both a
+name collision and a conceptual muddle. The checks live with the hook, in `.githooks/`.
+
+Do not try to detect a differently named documentation directory. If the project has
+`documentation/` or `doc/` rather than `docs/`, create `docs/` alongside it and say in the step 9
+report that it was created and why: `docs/knowledge/` is a constant the checks depend on, and a
+configurable path would mean a config file to read — a new mechanism and a new silent-failure
+surface, to serve a case nobody has hit.
 
 ## Step 3 — Create exactly four files
 
@@ -134,27 +157,43 @@ stop at copying the file in.
 
 ## Step 6 — Install the checks as warnings
 
+The checks live in `.githooks/`, next to the hook they belong with — `init` does not create a
+`scripts/` directory, per the layout rule above:
+
 ```bash
-mkdir -p scripts
-cp "${CLAUDE_PLUGIN_ROOT}/assets/check-docs.sh" scripts/
-cp "${CLAUDE_PLUGIN_ROOT}/assets/check-staleness.sh" scripts/
-chmod +x scripts/check-docs.sh scripts/check-staleness.sh
-git add --chmod=+x scripts/check-docs.sh scripts/check-staleness.sh
+cp "${CLAUDE_PLUGIN_ROOT}/assets/check-docs.sh" .githooks/
+cp "${CLAUDE_PLUGIN_ROOT}/assets/check-staleness.sh" .githooks/
+chmod +x .githooks/check-docs.sh .githooks/check-staleness.sh
+git add --chmod=+x .githooks/check-docs.sh .githooks/check-staleness.sh
 ```
 
 Same reason as step 5: the index bit is what survives a clone, and `chmod` alone does not set it
 on Windows.
 
 Then make sure the target repository pins line endings for these files, appending to
-`.gitattributes` if it exists and creating it if it does not:
+`.gitattributes` if it exists — merge, never overwrite — and creating it if it does not:
 
 ```
-*.sh        text eol=lf
-.githooks/* text eol=lf
+.githooks/*        text eol=lf
+.claude/hooks/*.sh text eol=lf
 ```
 
-A hook or script checked out with CRLF fails on Linux and macOS with
-`bad interpreter: /usr/bin/env bash^M`.
+Both lines name only paths this plugin writes; a bare `*.sh` would set policy for the project's
+own scripts, which is not this plugin's call. The second line is appended even when step 7 is
+later declined — it then matches nothing and costs nothing. A hook or script checked out with
+CRLF fails on Linux and macOS with `bad interpreter: /usr/bin/env bash^M`.
+
+**Then add the tooling rows to `CLAUDE.md`'s routing table**, from where this run actually put the
+scripts — the same generative rule as step 3's table:
+
+```
+| whether the docs drifted from the code | run `.githooks/check-docs.sh` |
+| how far behind the docs are | run `.githooks/check-staleness.sh` |
+```
+
+These rows are the manifest `audit` locates the checks through; a moved script with no row, or a
+row with no script, is what makes a drift check go quietly blind. A row exists because the file
+was written at that path in this step, not because this skill lists it.
 
 The drift check covers the code the knowledge files describe. The repository's own tooling — the
 hooks, the checks, the agent configuration — is deliberately outside it, and the generated
@@ -170,7 +209,7 @@ Run both once and show the output. **`check-docs.sh` exits 2 when it cannot dete
 — on a repository whose only branch is the one checked out, which is the usual state of a freshly
 scaffolded project, that is the expected first run. It is not a failure of the scaffold: the check
 is refusing to report success without having compared anything. Say that when it happens, and name
-the explicit-base form, `./scripts/check-docs.sh <ref>`, for the first branch the user cuts.
+the explicit-base form, `./.githooks/check-docs.sh <ref>`, for the first branch the user cuts.
 
 Exit codes for `check-docs.sh`: 0 ran against a named base, 1 drift found under `STRICT=1`, 2 could
 not run — not inside a git repository, or no usable base. 2 is independent of `STRICT`, because an

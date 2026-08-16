@@ -45,23 +45,40 @@ For every `docs/knowledge/*.md`, read the YAML frontmatter:
 - `as_of` more than six months before today → report alongside the commit count, not instead
   of it.
 
-`scripts/check-staleness.sh` covers the first three if it is installed. Run it and quote it rather
-than duplicating its work.
+`check-staleness.sh` covers the first three if it is installed — locate it the same way check 3a
+locates the drift check, through the routing table. Run it and quote it rather than duplicating
+its work.
 
 ### 3. The drift check, and `covers_paths` that point nowhere
 
 Two questions, not one. Run the script for the first; do the second by hand. Both are needed, and
 the reason is in the note at the end of this check — read it before deciding they are duplicates.
 
-**3a. Run `scripts/check-docs.sh` if it is installed, and interpret what it returns.** Same rule as
-check 2: run it and quote it rather than duplicating its work.
+**3a. Locate the drift check through `CLAUDE.md`'s routing table, run it, and interpret what it
+returns.** The routing table is the manifest: the row whose target names `check-docs.sh` says
+where this repository keeps its drift check. Do not hardcode a location — the path has moved once
+already, and a check that quietly stops checking because a path moved underneath it is the defect
+class this skill exists to catch. Same rule as check 2: run it and quote it rather than
+duplicating its work.
+
+Resolve the location before the exit-code table applies:
+
+- The table names a path and a script is there → run it.
+- **The table names a path and nothing is there → high-severity finding, not "not applicable".**
+  The memory promises a drift check that does not exist; every run since its deletion has checked
+  nothing while the table said otherwise.
+- The table names no drift check at all → look in `.githooks/check-docs.sh` and
+  `scripts/check-docs.sh` before concluding anything; scaffolds made before the tooling rows
+  existed installed the script without a row. A script found there is run as normal, plus a
+  low-severity finding that the routing table does not name it. Nothing in the table and nothing
+  at either location → not applicable, per the rule at the top of this section.
 
 | Exit | What to report |
 |---|---|
 | 2 | **high severity, with one downgrade.** The drift check could not run at all — the script names the reason on stderr (not inside a git repository, no usable base ref, no common ancestor, or a failed diff); quote that reason and any base refs it rejected. A repository whose drift check has never run is a repository whose knowledge files have never been checked against the code, however green the last run looked. **Downgrade to low — never suppress — when the script's own stderr says the repository has one branch and no remote**, so no base ref can exist yet. High means "wrong or silently unenforced", and nothing there is silent: the script said out loud that it compared nothing, and a repository that cannot yet have a base has nothing to drift against. The finding still appears and still says the drift check has never compared anything; only the severity changes, and only in the state the script itself identifies. Any other exit-2 reason stays high. |
 | 1 | drift found, and `STRICT=1` was set. Quote the `DRIFT:` lines. |
 | 0 | it ran against a base it named. Quote the base ref, and quote any `DRIFT:` lines or skipped-document lines it printed — exit 0 with warnings is the default configuration, so 0 does not mean "no findings". |
-| not installed | not applicable, per the rule at the top of this section. |
+| never ran | resolved by the location rules above, before this table — a named path with nothing at it is a finding, and only a repository whose table names no tooling and has none installed is "not applicable". |
 
 The script also names every knowledge document it did not check. A document with no `covers_paths`
 key is an opt-out and only worth noting; a document whose key is present but could not be read is a

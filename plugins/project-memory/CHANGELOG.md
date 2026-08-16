@@ -35,6 +35,25 @@ tag. macOS remains untested.
 
 ### Changed
 
+- **`init` no longer creates a `scripts/` directory.** `check-docs.sh` and `check-staleness.sh`
+  now install into `.githooks/`, next to the `commit-msg` hook they belong with. Many projects
+  already own `scripts/` for build and deploy tooling; writing documentation checks into it was
+  both a name collision and a conceptual muddle. The only top-level directory `init` now creates
+  unconditionally is `.githooks/`; an existing `docs/` is used rather than duplicated, and a
+  project with `documentation/` or `doc/` instead still gets `docs/` — the path the checks depend
+  on is constant, and the report says so. Scaffolds made by older versions keep their `scripts/`
+  layout and keep working; the scripts never hardcoded their own location.
+- The `.gitattributes` lines `init` appends now name only paths this plugin writes —
+  `.githooks/*` and `.claude/hooks/*.sh` — instead of a bare `*.sh`, which set line-ending policy
+  for the project's own scripts.
+- The generated `CLAUDE.md` routing table now carries two tooling rows, written from where the
+  run actually put the checks, and **`audit` locates both scripts through the routing table
+  instead of a hardcoded path**. A row that names a path with nothing at it is a high-severity
+  finding, not "not applicable"; a script found at a historical location with no row is run and
+  reported as unrouted; "not applicable" is reserved for a repository whose table names no
+  tooling and has none installed. Without this, the layout move itself would have made `audit`
+  report the drift check as not applicable — a check quietly going blind because a path moved
+  underneath it.
 - `audit` check 8 states the one exception to decision-record immutability — a dated, append-only
   note under a trailing `## Notes` heading — and how to check it mechanically with
   `git diff <adding-commit>..HEAD`, so a legitimate note is not reported as a modified accepted

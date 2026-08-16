@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Staleness check: how far behind HEAD each knowledge document's basis_commit is.
 #
-# Usage:   ./scripts/check-staleness.sh
+# Usage:   ./.githooks/check-staleness.sh
 #          Runs from anywhere inside the repository: the script changes to the
 #          repository root before doing anything. A relative DOCS_DIR is
 #          therefore relative to the repository root, not to the caller's

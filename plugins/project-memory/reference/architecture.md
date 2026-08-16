@@ -269,7 +269,7 @@ sources on a real cadence. The mechanisms buy attention. They do not buy correct
 | C. Outside | agent state in the home directory | only this machine | nothing |
 
 **Tier A is the only real memory:** `CLAUDE.md`, `.claude/rules/`, `.claude/settings.json`,
-`.githooks/`, `scripts/`, all of `docs/`, plus commits, tags and notes. Commit the agent
+`.githooks/` (hook and checks both), all of `docs/`, plus commits, tags and notes. Commit the agent
 configuration; it is project knowledge, not personal setup.
 
 **Tier B is personal scratch.** `CLAUDE.local.md` is designed for per-machine preferences and is

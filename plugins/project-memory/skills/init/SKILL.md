@@ -150,6 +150,14 @@ Merge `assets/settings.json.fragment` into `.claude/settings.json`. If that file
 merge by hand into the existing `hooks` object; never replace the file. Tell the user to edit the
 `PROTECTED` array in `protect-files.sh` to match the project.
 
+State the dependency at this point, in the report, so the choice is made knowingly now rather than
+discovered when a write goes through: **`protect-files.sh` reads its input with `jq` and falls back
+to a `sed` extraction when `jq` is not installed.** Check with `command -v jq` and say which of the
+two this machine will use. The fallback is deliberate — a protection hook that cannot read its
+input allows the write rather than blocking every edit — and when it cannot find a path at all the
+hook says so on stderr and still allows. Installing `jq` is what makes the check reliable rather
+than best-effort; without it, a tool input the `sed` line cannot parse is an unenforced write.
+
 ## Step 8 — Offer git notes transfer
 
 Notes are not pushed or fetched by default and nothing signals their absence:

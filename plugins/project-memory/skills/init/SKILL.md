@@ -130,6 +130,11 @@ the explicit-base form, `./scripts/check-docs.sh <ref>`, for the first branch th
 Exit codes for `check-docs.sh`: 0 ran against a named base, 1 drift found under `STRICT=1`, 2 could
 not determine a base. 2 is independent of `STRICT`, because an inability to run is not a finding.
 
+`check-staleness.sh` uses the same three codes: 0 ran, 1 findings under `STRICT=1`, 2 could not run
+at all — no `HEAD` to count against. A single document whose commit count cannot be taken is
+reported as a finding against that document, not as a failure of the whole run, because its
+comparison point is its own `basis_commit` rather than one shared base.
+
 ## Step 7 — Offer the agent hooks
 
 Only if the user wants enforcement beyond the commit hook:

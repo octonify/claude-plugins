@@ -229,7 +229,15 @@ are a different mechanism:
 |---|---|
 | 0 | the check ran, against a base it named; findings, if any, were warnings |
 | 1 | findings, and `STRICT=1` was set |
-| 2 | the check could **not run** — `check-docs.sh` could not determine a base ref |
+| 2 | the check could **not run** — for `check-docs.sh`, no usable base ref, no common ancestor, or a failing `git diff`; for `check-staleness.sh`, no `HEAD` to count against |
+
+The two scripts differ in what reaches 2, and the difference follows from what each compares
+against. `check-docs.sh` has one base ref for the whole run, so losing it stops everything.
+`check-staleness.sh` has a comparison point per document — that document's own `basis_commit` — so
+a document whose distance from `HEAD` cannot be counted is a finding against that document, and the
+rest of the run continues. Only a repository-level failure, where nothing could be counted, is a 2.
+A per-document count that fails is never substituted with a number: reporting a failed count as
+zero commits behind renders an inability to answer as the healthiest possible result.
 
 `STRICT` governs whether *findings* fail the build. It has no bearing on 2: "I cannot determine
 what to compare against" is not a finding, it is an inability to do the job, and it must be loud

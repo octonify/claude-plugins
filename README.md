@@ -57,7 +57,7 @@ once, which works immediately because the marketplace is already registered.
 
 ## Status of `project-memory`
 
-**Experimental, version `0.2.0`.** The documentation architecture it installs is assembled from
+**Experimental, version `0.3.0`.** The documentation architecture it installs is assembled from
 published conventions — arc42, Nygard ADRs, Conventional Commits — but the way they are combined
 here, along with the numeric budgets, the confidence markers, the `covers_paths` drift check and
 the three-tier durability model, is a proposal that has not been validated on a real project over

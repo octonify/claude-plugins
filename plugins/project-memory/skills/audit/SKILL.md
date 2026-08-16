@@ -108,7 +108,13 @@ counts per file plus up to five examples. Skip headings, table header rows, code
 template placeholder lines.
 
 A `[F]` with no source path or no date is a finding of the same kind: it asserts provenance it
-does not carry.
+does not carry. So is a `[F]` whose source is a description rather than something checkable. The
+line: the source must name *what to check* — a path, a path with a line number, a command, or a
+named absence (`no tsconfig.json at repo root`) — such that a reader can turn it into a yes/no
+check without asking what the writer meant. A source naming only *what the writer did* ("repo
+root listing", "read the code", "team discussion") asserts fact-grade provenance nobody can
+re-verify; report it, with the suggested fix of rewriting the source as the check or downgrading
+the claim to `[I]`.
 
 ### 5. Commit message discipline
 

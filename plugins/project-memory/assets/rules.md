@@ -18,7 +18,12 @@ it optional; being written down here is what it has.
    Context or Consequences that turned out to be false. A note may never change the Decision —
    that still requires a superseding record. Nothing above `## Notes` is ever edited.
 3. Every non-obvious claim carries `[F]` fact / `[I]` inference / `[U]` unverified, plus a source
-   and a date: `[F, src/config/loader.ts:88, 2026-08-16]`.
+   and a date: `[F, src/config/loader.ts:88, 2026-08-16]`. A `[F]` source must be something a
+   reader can re-check mechanically: a file path, a path with a line number, or a command that
+   can be run. An absence is cited as the runnable check that establishes it —
+   `[F, no tsconfig.json at repo root, 2026-08-16]` — never as a description of having looked
+   ("repo root listing" names what was done, not what to check). If the source cannot be written
+   that way, the claim is `[I]`.
 4. Contradictions go to `docs/knowledge/07-open-questions.md`. Do not resolve by guessing; the
    disagreement is the finding.
 5. Do not document what can be derived from the code. No directory listings, no dependency lists.

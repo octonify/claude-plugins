@@ -87,6 +87,11 @@ tag. macOS remains untested.
 - `reference/architecture.md` §3 records, next to the "no trigger, no document" guard, why a
   shipped promise with nothing behind it is a finding rather than an argument for creating the
   promised file, and why ADR 0001 was the one exception.
+- A `[F]` source must now be something a reader can re-check mechanically — a path, a path with a
+  line number, a command, or a named absence (`no tsconfig.json at repo root`) — never a
+  description of having looked. The rules file states it; `audit` check 4 reports a `[F]` whose
+  source names what the writer did rather than what to check, with the fix of rewriting the
+  source as the check or downgrading the claim to `[I]`.
 
 ## [0.2.0] — 2026-08-16
 

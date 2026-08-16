@@ -10,7 +10,10 @@
 
 1. Budgets: `CLAUDE.md` 200 lines, `docs/knowledge/*.md` 150 lines, ADRs 60 lines,
    `.claude/rules/*.md` 100 lines. Over budget means split by topic or delete.
-2. Accepted decision records are never edited. Supersede with a new one.
+2. Accepted decision records are never edited, with one exception: a dated, append-only note
+   under a trailing `## Notes` heading, recording a later observation or correcting a claim in
+   Context or Consequences that turned out to be false. A note may never change the Decision —
+   that still requires a superseding record. Nothing above `## Notes` is ever edited.
 3. Every non-obvious claim carries `[F]` fact / `[I]` inference / `[U]` unverified, plus a source
    and a date: `[F, src/config/loader.ts:88, {{DATE}}]`.
 4. Contradictions go to `docs/knowledge/07-open-questions.md`. Do not resolve by guessing; the

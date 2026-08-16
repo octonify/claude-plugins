@@ -8,6 +8,16 @@ below. Without that bump, no installed user receives the change.
 
 ## [Unreleased]
 
+### Changed
+
+- `audit` check 8 states the one exception to decision-record immutability — a dated, append-only
+  note under a trailing `## Notes` heading — and how to check it mechanically with
+  `git diff <adding-commit>..HEAD`, so a legitimate note is not reported as a modified accepted
+  record forever.
+- `CLAUDE.md.template` hard rule 2 carries the same exception, so the convention the plugin
+  teaches matches the one this repository follows. A note may never change the Decision; that
+  still requires a superseding record.
+
 ## [0.2.0] — 2026-08-16
 
 Fixes to the shipped scripts. Nothing in this release changes the shape of what `init` writes.

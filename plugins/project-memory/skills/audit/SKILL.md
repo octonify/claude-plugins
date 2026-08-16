@@ -140,7 +140,14 @@ agent to nothing just as effectively as one naming a missing file.
 ### 8. Decision record integrity
 
 - Any `docs/decisions/*.md` with status `accepted` modified after the commit that added it →
-  report; accepted records are immutable.
+  report; accepted records are immutable. One exception: a modification is not a finding when
+  every added line falls under a trailing `## Notes` heading and no line was removed. Check it
+  mechanically, not by judgement: find the adding commit with
+  `git log --diff-filter=A --format=%H -- <file>`, then read
+  `git diff <adding-commit>..HEAD -- <file>`. The exception holds only if the diff has no `-`
+  lines (the `---` file header aside) and every `+` line is at or below a `+## Notes` line or a
+  `## Notes` context line that is the file's last section. A removed line, a changed line above
+  `## Notes`, or an added heading after `## Notes` is a finding as before.
 - Numbering gaps or duplicates.
 - Any ADR whose Context section is one line — the Context paragraphs are the only reason the file
   exists rather than a commit trailer.

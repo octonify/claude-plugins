@@ -62,6 +62,14 @@ deliberate — see `docs/decisions/0002-generic-marketplace-name.md`.
     an instruction lets an agent conclude "not applicable" when it means "I could not tell"; and it
     finds only syntactic shapes — a script that asserts a precondition it never verifies, such as
     assuming it runs from the repository root, contains nothing to grep for.
+11. **Accepted decision records in `docs/decisions/` are immutable.** The single exception: a
+    dated, append-only note under a trailing `## Notes` heading, and only to record a later
+    observation or to correct a claim in Context or Consequences that turned out to be false. A
+    note may never change the Decision — a changed Decision still requires a superseding record,
+    with no exception — and nothing above the `## Notes` heading is ever edited. Where
+    `protect-files.sh` is installed it blocks the whole `docs/decisions/` directory and cannot
+    tell a note from an edit; hitting that block while writing a legitimate note is expected, and
+    overriding it is a conscious act, not a sign the hook is broken.
 
 ## Adding a plugin
 

@@ -45,7 +45,9 @@ rather than lightweight, no bare `v<version>` — still holds.
   place, marked superseded, because the record of the turn not taken is what stops it being taken
   again.
 
-**Note (2026-08-16, first exercise):** `claude plugin tag` was run for the first time, for
+## Notes
+
+**2026-08-16, first exercise:** `claude plugin tag` was run for the first time, for
 `project-memory--v0.2.0`. The marketplace entry carries no `version` field — this repository
 forbids one — and the command accepted that silently: it reported the version from `plugin.json`
 and the marketplace entry it had matched, then created the tag. The agreement check cited above

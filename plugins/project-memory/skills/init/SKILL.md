@@ -161,8 +161,10 @@ discovered when a write goes through: **`protect-files.sh` reads its input with 
 to a `sed` extraction when `jq` is not installed.** Check with `command -v jq` and say which of the
 two this machine will use. The fallback is deliberate — a protection hook that cannot read its
 input allows the write rather than blocking every edit — and when it cannot find a path at all the
-hook says so on stderr and still allows. Installing `jq` is what makes the check reliable rather
-than best-effort; without it, a tool input the `sed` line cannot parse is an unenforced write.
+hook says so on stderr and still allows. The fallback's escape handling is limited: it undoes the
+common JSON escapes (`\\`, `\"`, `\/`) so Windows paths compare correctly, but it is not a JSON
+parser — `\n`, `\uXXXX` or quotes inside a path still defeat it, and a write it cannot parse is an
+unenforced write. Installing `jq` is what makes the hook reliable rather than best-effort.
 
 ## Step 8 — Offer git notes transfer
 

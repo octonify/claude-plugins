@@ -17,6 +17,14 @@ if command -v jq >/dev/null 2>&1; then
 else
   # Fallback so a missing jq degrades to "allow", never to a spurious block.
   FILE_PATH="$(printf '%s' "$INPUT" | sed -n 's/.*"file_path"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -n1)"
+  # The extracted body still carries JSON escaping: a Windows path arrives as
+  # D:\\Projects\\..., normalises to D://Projects//..., and then matches no
+  # pattern - the hook would allow a write to a protected file. Undo \\, \"
+  # and \/ in one left-to-right pass (one sed substitution, so \\/ becomes \/
+  # and is not mangled by sequential replacements). This is still not a JSON
+  # parser: \n, \uXXXX and escaped quotes inside the path defeat it.
+  # Installing jq is what makes this hook reliable.
+  FILE_PATH="$(printf '%s' "$FILE_PATH" | sed 's@\\\(["/\\]\)@\1@g')"
   READ_BY="sed"
 fi
 

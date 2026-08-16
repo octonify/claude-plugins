@@ -11,6 +11,9 @@ PROTECTED=("docs/decisions/" ".env" "infra/prod")
 
 INPUT="$(cat)"
 
+# The discarded output is deliberate: the probe's only question is whether jq
+# is on PATH, both answers are handled by the branch, and the fallback below
+# says out loud when the answer forced it to degrade.
 if command -v jq >/dev/null 2>&1; then
   FILE_PATH="$(printf '%s' "$INPUT" | jq -r '.tool_input.file_path // empty')"
   READ_BY="jq"

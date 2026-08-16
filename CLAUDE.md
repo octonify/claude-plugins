@@ -48,10 +48,20 @@ deliberate — see `docs/decisions/0002-generic-marketplace-name.md`.
 9. Scripts shipped as plugin assets are tested by running them before they are committed. They are
    installed on other people's machines; an illustrative script is not acceptable.
 10. **A shipped script may not discard an error silently.** Every occurrence of `|| true`,
-    `|| echo <value>`, `2>/dev/null`, and `[ -z "$x" ] && continue|exit 0` carries a comment on
-    the line above saying why silence is correct there. An uncommented occurrence is a defect.
-    Two known limits: this covers only shell, and it cannot see the same defect in a skill file,
-    where an instruction lets an agent conclude "not applicable" when it means "I could not tell".
+    `|| echo <value>`, `2>/dev/null`, `>/dev/null 2>&1`, and `[ -z "$x" ] && continue|exit 0`
+    carries a comment on the line above saying why silence is correct there. An uncommented
+    occurrence is a defect. The gate runs over every shipped asset whose first line is a shebang,
+    so extensionless hooks are covered:
+
+    ```bash
+    grep -nE '\|\|[[:space:]]*(true|echo)|2>/dev/null|>/dev/null[[:space:]]+2>&1|^\s*\[ -z .* \]\s*&&' \
+      $(awk 'FNR==1 && /^#!/ {print FILENAME}' plugins/*/assets/*)
+    ```
+
+    Three known limits: it covers only shell; it cannot see the same defect in a skill file, where
+    an instruction lets an agent conclude "not applicable" when it means "I could not tell"; and it
+    finds only syntactic shapes — a script that asserts a precondition it never verifies, such as
+    assuming it runs from the repository root, contains nothing to grep for.
 
 ## Adding a plugin
 

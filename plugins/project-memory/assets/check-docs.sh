@@ -51,10 +51,10 @@ DOCS_DIR="${DOCS_DIR:-docs/knowledge}"
 STRICT="${STRICT:-0}"
 CANDIDATES="origin/main origin/master main master"
 
-# Both fallbacks are deliberate: an unborn HEAD leaves HEAD_SHA empty and a
-# detached HEAD leaves CURRENT_BRANCH empty. Empty is a state to carry, not an
-# error to report - every later use is guarded with [ -n ... ].
+# The fallback is deliberate: an unborn HEAD leaves this empty, and empty is a
+# state to carry, not an error to report - every later use is guarded with [ -n ... ].
 HEAD_SHA="$(git rev-parse --verify --quiet HEAD || true)"
+# Same deliberate fallback: a detached HEAD leaves this empty, with the same guards.
 CURRENT_BRANCH="$(git symbolic-ref --quiet --short HEAD || true)"
 
 # Why a candidate cannot serve as a base, or empty if it can.

@@ -58,7 +58,7 @@ check 2: run it and quote it rather than duplicating its work.
 
 | Exit | What to report |
 |---|---|
-| 2 | **high severity.** The drift check cannot run in this repository, so it has never checked anything. Quote what it printed, including the base refs it rejected. A repository whose drift check has never run is a repository whose knowledge files have never been checked against the code, however green the last run looked. |
+| 2 | **high severity.** The drift check could not run at all — the script names the reason on stderr (not inside a git repository, no usable base ref, no common ancestor, or a failed diff); quote that reason and any base refs it rejected. A repository whose drift check has never run is a repository whose knowledge files have never been checked against the code, however green the last run looked. |
 | 1 | drift found, and `STRICT=1` was set. Quote the `DRIFT:` lines. |
 | 0 | it ran against a base it named. Quote the base ref, and quote any `DRIFT:` lines or skipped-document lines it printed — exit 0 with warnings is the default configuration, so 0 does not mean "no findings". |
 | not installed | not applicable, per the rule at the top of this section. |

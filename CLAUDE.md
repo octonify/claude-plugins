@@ -58,10 +58,19 @@ deliberate — see `docs/decisions/0002-generic-marketplace-name.md`.
       $(awk 'FNR==1 && /^#!/ {print FILENAME}' plugins/*/assets/*)
     ```
 
-    Three known limits: it covers only shell; it cannot see the same defect in a skill file, where
-    an instruction lets an agent conclude "not applicable" when it means "I could not tell"; and it
+    Four known limits: it covers only shell; it cannot see the same defect in a skill file, where
+    an instruction lets an agent conclude "not applicable" when it means "I could not tell"; it
     finds only syntactic shapes — a script that asserts a precondition it never verifies, such as
-    assuming it runs from the repository root, contains nothing to grep for.
+    assuming it runs from the repository root, contains nothing to grep for; and it cannot see a
+    shell command embedded in a non-shell file, whose first line is no shebang and whose format
+    may have no comment syntax to annotate with. The one current instance is the `2>/dev/null` in
+    `plugins/project-memory/assets/settings.json.fragment`'s `SessionStart` command, and its
+    justification lives here because JSON cannot hold it: the hook's `cat` of
+    `docs/knowledge/07-open-questions.md` runs in the user's session, where the file may
+    legitimately not exist yet or have been declined, a `cat` error would be injected into the
+    model's context as noise, and the absence it silences is not lost — `audit` checks 6 and 7
+    report a missing target loudly. New instances of this shape carry their justification in this
+    list too.
 11. **Accepted decision records in `docs/decisions/` are immutable.** The single exception: a
     dated, append-only note under a trailing `## Notes` heading, and only to record a later
     observation or to correct a claim in Context or Consequences that turned out to be false. A
@@ -158,7 +167,8 @@ overrides one:
 9. Propose promotion before the round closes; deciding it is the planning layer's call.
 10. Mark inference as inference and assumption as assumption.
 11. Any round that edits a knowledge file updates that file's `as_of` and `basis_commit` in the
-    same commit.
+    same commit; `basis_commit` is the head at the time of the edit, since it can never name the
+    commit that contains the edit itself.
 
 Known defects go by audience: a user-facing defect in a shipped asset goes in that plugin's
 `CHANGELOG.md` under `## Known defects`; a repository-side defect with no user exposure stays in

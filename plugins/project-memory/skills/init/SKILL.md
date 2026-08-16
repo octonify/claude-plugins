@@ -72,7 +72,10 @@ identically in every repository is filler, the exact failure mode named at the t
   write the gap into `07-open-questions.md` instead of inventing a rationale — the same rule as
   the build commands.
 - **Decision** — adopting the structure, naming which parts were installed and which declined.
-- **Consequences** — what now has to be maintained, and what the routing table now promises.
+- **Consequences** — what now has to be maintained, and what the routing table now promises. At
+  least one consequence must name something that is true only in this repository; a Consequences
+  section that would survive transplantation into another project unedited is the generic list
+  this spec exists to prevent.
 - Under 60 lines: `audit` check 1's budget. Nygard format, from the template: title,
   `**Status:** accepted`, `**Date:**`, Context, Decision, Consequences.
 - Filename in the target repository's own voice, in the shape of

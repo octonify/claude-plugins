@@ -79,6 +79,13 @@ trigger. No trigger, no document.
 | a rule in `CLAUDE.md` | the agent got it wrong once, or a review caught something it should have known |
 | a `.claude/rules/` file | the instruction applies to a subset of paths, not the whole repo |
 
+A corollary to guard 3, learned when the ADR layer was added: a shipped artifact that promises a
+file nothing creates is a finding, not an argument for creating the file. The next "X already
+promises this" claim is the alarm, not the precedent — deleting the promise is as valid a response
+as delivering it, and the promise trail must be named and auditable before either. ADR 0001 was
+created rather than the promises deleted only because deleting meant shipping three of the four
+memory types.
+
 **Guard 4 — review the rule set for contradictions.** When two rules contradict, the model may
 pick one arbitrarily. Splitting rules across `CLAUDE.md`, `.claude/rules/` and nested files creates
 a risk a single file did not have. Read the rules end to end whenever one is added.

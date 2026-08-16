@@ -46,6 +46,19 @@ tag. macOS remains untested.
   is built from the file set the run actually created, not copied from the template and trimmed.
   The old wording — "include only rows whose target file exists" — contradicted the template it
   applied to for as long as `docs/decisions/` was never created.
+- `init` step 3's ADR 0001 spec now requires that at least one consequence name something true
+  only in the target repository. The previous wording, "what now has to be maintained", invited a
+  generic list, and the first real ADR produced under it came out roughly one sentence in five
+  specific to its repository.
+- `audit` check 3a no longer rates every drift-check exit 2 as high severity. When the script's
+  own stderr says the repository has one branch and no remote — so no base ref can exist yet —
+  the finding is reported at low severity instead: nothing there is silently unenforced, because
+  the script said out loud that it compared nothing. The finding itself still appears; every
+  other exit-2 reason stays high. Before this, a user running `audit` the day after `init` got a
+  high-severity finding the scaffold had told them to expect.
+- `reference/architecture.md` §3 records, next to the "no trigger, no document" guard, why a
+  shipped promise with nothing behind it is a finding rather than an argument for creating the
+  promised file, and why ADR 0001 was the one exception.
 
 ## [0.2.0] — 2026-08-16
 

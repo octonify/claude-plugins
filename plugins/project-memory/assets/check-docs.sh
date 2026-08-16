@@ -101,7 +101,9 @@ else
     # whose advice is actionable either way. stderr is suppressed because the
     # failure is already handled by that routing, not ignored.
     SHAPE_KNOWN=1
+    # stderr suppressed: the failure is routed to the generic message via SHAPE_KNOWN, not ignored.
     remotes="$(git remote 2>/dev/null)" || SHAPE_KNOWN=0
+    # Same suppression, same SHAPE_KNOWN routing.
     branches="$(git for-each-ref --format='%(refname:short)' refs/heads 2>/dev/null | wc -l)" || SHAPE_KNOWN=0
     if [ "$SHAPE_KNOWN" -eq 1 ] && [ -z "$remotes" ] && [ "$branches" -le 1 ]; then
       cat >&2 <<EOF
@@ -247,6 +249,7 @@ else
     # An empty result here was already classified and reported by the first
     # pass; this pass only walks readable opt-ins.
     paths="$(covers_paths_of "$doc")"
+    # Empty was reported by the first pass; skipping here is the handling, not a silence.
     [ -z "$paths" ] && continue
 
     doc_touched=false

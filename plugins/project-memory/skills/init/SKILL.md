@@ -117,6 +117,12 @@ Then make sure the target repository pins line endings for these files, appendin
 A hook or script checked out with CRLF fails on Linux and macOS with
 `bad interpreter: /usr/bin/env bash^M`.
 
+The drift check covers the code the knowledge files describe. The repository's own tooling — the
+hooks, the checks, the agent configuration — is deliberately outside it, and the generated
+`03-architecture.md` carries that sentence so the decision survives this conversation. Say it once
+here too: deleting `check-docs.sh` will not make any check fail, by design, because a knowledge
+file whose job is to describe the checks costs more structure than it earns.
+
 Both scripts exit 0 on findings by default and only fail when `STRICT=1` is set. Leave it that
 way. Do not add them to CI as blocking, and do not set `STRICT=1` on this run. Say explicitly
 that promotion to blocking is a later, separate decision, once the output is quiet.

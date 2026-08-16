@@ -26,6 +26,25 @@ changes reach no installed user until it is bumped.
   fall back to the default chain.
 - `check-docs.sh` exited 0 with an empty diff when the base and `HEAD` had no common ancestor,
   which reads as "no changes". It now exits 2.
+- `check-docs.sh` ran `git diff` with stderr discarded and its exit status thrown away, so any
+  failure of the diff left the changed-file list empty and the run printed "no changes, nothing to
+  check" and exited 0 — one line below the guard added above to prevent exactly that. The status is
+  kept, git's own message is shown, and a failed diff exits 2.
+- `check-docs.sh` skipped in silence any knowledge document whose `covers_paths` could not be
+  parsed, which is indistinguishable from a document that never opted in. Every unchecked document
+  is now named on stderr, and a key that is present but unreadable is reported as a broken opt-in
+  and counts as a finding. The YAML flow form `covers_paths: [src/**]` is now parsed rather than
+  silently discarded.
+- `check-docs.sh` matched a `covers_paths` prefix anywhere in a changed path, so `src/api/**`
+  reported drift for a change to `vendor/foo/src/api/x.ts`. The match is anchored to the start of
+  the path, with the prefix escaped so a literal `.` is not a wildcard.
+- `check-staleness.sh` absorbed a failing `git rev-list --count` with `|| echo 0`, recording the
+  document as zero commits behind — the healthiest result it can report. A failed count is now
+  named as `UNCOUNTABLE`, with git's message, and no value is substituted. An empty or non-numeric
+  count no longer produces a bash syntax error that skipped the document inside an exit-0 run.
+- `protect-files.sh` allowed a write in silence when it could not read the tool input. It still
+  allows — a protection hook that cannot read its input must not block every edit — but it now says
+  so on stderr, in different words for the `jq` path and the fallback path.
 
 ### Changed
 
@@ -39,6 +58,27 @@ changes reach no installed user until it is bumped.
 - `reference/architecture.md` documents the exit-code contract of both scripts, corrects the
   enforcement table row for the `commit-msg` hook, and recommends — without shipping — a CI check
   on commit subjects.
+- `check-docs.sh` distinguishes two reasons for having no base ref. A repository with one branch and
+  no remote is told that no base can exist yet, that the check becomes meaningful once there is a
+  trunk, and that the scaffold is not broken — instead of being told to pass the ref the work
+  branched from, which does not exist there.
+- `check-staleness.sh` states its exit-code contract in its header, in the same three-code form as
+  `check-docs.sh`, and ends a healthy run with `N documents checked, none stale.` A run that printed
+  nothing could not be told apart from a script that never ran.
+- `audit` check 3 now runs `check-docs.sh` and states how to read each exit code, with exit 2 as a
+  high-severity finding. The by-hand `covers_paths` test stays, and the file says why both exist.
+  Check 7 covers routing-table rows pointing at a directory, not only at a file.
+- `init` states the `jq` dependency of `protect-files.sh` in step 7, and says in step 6 that the
+  repository's own tooling is deliberately outside the drift check. The generated
+  `03-architecture.md` carries that scope sentence so the decision survives the conversation.
+
+### Corrected
+
+- **The 0.1.0 entry below claimed that `check-staleness.sh` gained a base-ref fallback chain. It
+  never had one, in any version.** The script takes no argument, names no ref, and compares each
+  document against its own `basis_commit`. The claim is marked in place in the 0.1.0 entry rather
+  than deleted: released text is not quietly rewritten. The rest of that entry was re-read against
+  the files it describes and nothing else in it was contradicted.
 
 ## [0.1.0] — 2026-08-16
 
@@ -70,6 +110,10 @@ turning them into real files are listed in the repository's initial commit and s
   last document was *not* stale. It now ends with an explicit `exit 0`.
 - Both checks died under `set -e` when the docs directory was empty or the base ref did not exist.
   They now resolve a base ref by fallback and report "nothing to check".
+  **[Wrong, as written. Corrected under `Unreleased` → `Corrected`, 2026-08-16.]** The empty-docs
+  half holds for both scripts. The base-ref half was only ever true of `check-docs.sh`:
+  `check-staleness.sh` has never had a base ref of any kind. Its comparison point is each
+  document's own `basis_commit`.
 - `check-docs.sh` parsed `covers_paths` without bounding the scan to the YAML frontmatter, so every
   markdown bullet in a document body was treated as a covered path whenever `covers_paths` was the
   last frontmatter key.

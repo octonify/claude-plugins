@@ -14,6 +14,25 @@ matched the Windows transcripts, including detached HEAD, a repository path cont
 and three locales. The scripts run were verified byte-identical to the `project-memory--v0.2.0`
 tag. macOS remains untested.
 
+### Added
+
+- `init` now creates `docs/decisions/` and a first record, ADR 0001 — the target project's own
+  decision to adopt this structure, written from what the survey learned about that repository,
+  in Nygard format and under the 60-line budget, with paragraph Context. Before this, five
+  shipped artifacts promised a decision-record layer — the `CLAUDE.md` routing table, the
+  architecture template's §9, `protect-files.sh`'s `PROTECTED` list, `adr-template.md`, and
+  `init`'s own `description` — and nothing delivered it. If the survey cannot learn enough to
+  write real Context, `init` says so and records the gap in `07-open-questions.md` instead of
+  inventing a rationale.
+- `init`'s step 9 report offers, ready to paste, the `Decision:` trailer for the commit the user
+  is about to make, naming the adaptations the run actually made to shipped defaults. `init` does
+  not commit, so it cannot write the trailer itself; adaptations of that size are trailer
+  material, not ADR material. If no adaptations were made, it says so instead of emitting an
+  empty template.
+- `init` step 4 may offer — never write unasked — ADR 0002 for one non-obvious, undocumented
+  choice the survey noticed, asking the user why it was made. If the user does not answer,
+  nothing is written and the question goes to `07-open-questions.md`. One offer at most.
+
 ### Changed
 
 - `audit` check 8 states the one exception to decision-record immutability — a dated, append-only
@@ -23,6 +42,10 @@ tag. macOS remains untested.
 - `CLAUDE.md.template` hard rule 2 carries the same exception, so the convention the plugin
   teaches matches the one this repository follows. A note may never change the Decision; that
   still requires a superseding record.
+- `init` step 3's routing-table instruction is now generative rather than subtractive: the table
+  is built from the file set the run actually created, not copied from the template and trimmed.
+  The old wording — "include only rows whose target file exists" — contradicted the template it
+  applied to for as long as `docs/decisions/` was never created.
 
 ## [0.2.0] — 2026-08-16
 

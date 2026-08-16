@@ -11,7 +11,8 @@ Scaffold the minimum viable memory structure in the target repository. Assets re
 live at `${CLAUDE_PLUGIN_ROOT}/assets/`. Copy them; do not re-derive their contents.
 
 The single biggest failure mode is creating all nine knowledge files. Nine empty files read as
-nine assignments and the corpus fills with restated code. Create three. Offer the rest.
+nine assignments and the corpus fills with restated code. Create four files — three knowledge
+files and one decision record. Offer the rest.
 
 ## Step 1 — Survey the target repository
 
@@ -43,19 +44,46 @@ Do not emit a file full of placeholders. Before writing `CLAUDE.md`, establish:
 
 Note the current commit: `git rev-parse --short HEAD`. Note today's date.
 
-## Step 3 — Create exactly three files
+## Step 3 — Create exactly four files
 
 | File | From |
 |---|---|
 | `CLAUDE.md` | `assets/CLAUDE.md.template` |
 | `docs/knowledge/03-architecture.md` | `assets/architecture.md.template` |
 | `docs/knowledge/07-open-questions.md` | `assets/open-questions.md.template` |
+| `docs/decisions/0001-<slug>.md` | `assets/adr-template.md` |
 
 Fill every `{{PLACEHOLDER}}` with real content or delete the line. Substitute the date and short
 commit into `as_of` and `basis_commit`. Set `covers_paths` to globs that actually exist in the
 repository; an entry pointing nowhere makes the drift check silently useless.
 
-Keep `CLAUDE.md` under 200 lines. Include only routing-table rows whose target file exists.
+Keep `CLAUDE.md` under 200 lines. Generate its routing table from the file set this run actually
+created: a row exists because its target was written in this step, not because the template
+carried it. Do not copy the template's table and trim it afterwards.
+
+**ADR 0001 is the target project's decision to adopt this structure**, written from what step 2
+learned about that repository. It is not a description of this plugin: a record that would read
+identically in every repository is filler, the exact failure mode named at the top of this file.
+
+- **Context** — paragraphs, not one line: what the project is, what state its documentation was
+  in before this run, and why a durable memory layer is worth the files it costs *here*. `audit`
+  check 8 reports a one-line Context as a finding, and a scaffold that fails its own audit on
+  creation is defective. If step 2 could not learn enough to write real Context, say so and
+  write the gap into `07-open-questions.md` instead of inventing a rationale — the same rule as
+  the build commands.
+- **Decision** — adopting the structure, naming which parts were installed and which declined.
+- **Consequences** — what now has to be maintained, and what the routing table now promises.
+- Under 60 lines: `audit` check 1's budget. Nygard format, from the template: title,
+  `**Status:** accepted`, `**Date:**`, Context, Decision, Consequences.
+- Filename in the target repository's own voice, in the shape of
+  `docs/decisions/0001-adopt-a-git-native-project-memory-structure.md`.
+
+Why this file is created rather than offered — recorded here so a later change does not move it
+into step 4's list: four shipped artifacts already route an agent to `docs/decisions/` — the
+`CLAUDE.md` routing table, `03-architecture.md` §9, `protect-files.sh`'s `PROTECTED` list, and
+this skill's own `description`. A promise with nothing behind it is worse than a fourth file,
+because the routing table's whole purpose is to stop an agent guessing, and a row pointing at an
+empty directory makes it guess with confidence.
 
 ## Step 4 — Offer, do not create, the rest
 
@@ -66,6 +94,14 @@ List these and create only the ones the user asks for:
 
 The rule to state when offering: each file is created the day it has real content, and a file
 that restates what the code says is a net loss because it competes for retrieval.
+
+One more offer, of a different kind. If step 1's survey turned up a choice in this repository
+that is non-obvious and undocumented — an unusual dependency, a structure that contradicts its
+framework's default, a workaround with no comment — offer to record it as ADR 0002. The offer
+names the choice and asks the user why it was made; the answer is what makes the record worth
+having. Never write it unasked, and never guess the reason. If the user does not answer, write
+nothing and put the question into `07-open-questions.md`, which is where an unanswered why
+belongs. One offer at most: a skill that offers five is a skill that gets its offers dismissed.
 
 ## Step 5 — Install the commit-msg hook
 
@@ -185,7 +221,7 @@ Only run this if a remote named `origin` exists and the user agrees.
 
 ## Step 9 — Report
 
-Print three lists and one warning, in this order:
+Print these five blocks, in this order:
 
 1. **Created** — every path written.
 2. **Skipped** — every path not written, with the reason (existed / declined / not applicable).
@@ -203,7 +239,22 @@ Print three lists and one warning, in this order:
    commit format has to hold for everyone, that check belongs in CI, where it runs on the server
    rather than on whoever remembered to configure their clone.
 
-4. **Next** — two or three concrete actions. Pick from: fill `07-open-questions.md` with what is
+4. **The `Decision:` trailer for the commit the user is about to make.** `init` does not commit,
+   so it cannot write the trailer itself; it hands the text over, ready to paste. One block,
+   naming every adaptation this run actually made to a shipped default — a trimmed `PROTECTED`
+   array, a declined component, a section dropped from a template — in the trailer format
+   `reference/architecture.md` §5 documents:
+
+   ```
+   Decision: <the adaptations made, and why they fit this repository>
+   Rejected: <the shipped default, or the alternative not taken>
+   ```
+
+   Adaptations of this size are trailer material, not ADR material — cheap and local to reverse.
+   Do not fold them into ADR 0001. If this run made no adaptations, say so instead of emitting an
+   empty template.
+
+5. **Next** — two or three concrete actions. Pick from: fill `07-open-questions.md` with what is
    currently unclear (usually the highest-value next hour); make one real commit to confirm the
    hook fires; add `covers_paths` globs once `03-architecture.md` has real content; run
    `/project-memory:audit` in a week.

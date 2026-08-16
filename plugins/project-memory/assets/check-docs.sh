@@ -13,7 +13,7 @@
 # Exit:    0  ran against a named base; either no drift, or drift with STRICT=0
 #          1  drift found and STRICT=1
 #          2  could not run: no usable base ref, or an explicitly given base
-#             that is not usable by the same rules. Independent of STRICT —
+#             that is not usable by the same rules. Independent of STRICT:
 #             this is an inability to run, not a finding.
 #
 # Reads the `covers_paths:` list from the YAML frontmatter of each
@@ -75,7 +75,7 @@ EOF
 fi
 
 # `git diff A...HEAD` needs a merge base. Without one git errors and prints
-# nothing, which would read as "no changes" — the same silent success again.
+# nothing, which would read as "no changes": the same silent success again.
 if [ -z "$(git merge-base "$BASE" HEAD 2>/dev/null || true)" ]; then
   echo "check-docs: ${BASE} and HEAD have no common ancestor, so there is no" >&2
   echo "            three-dot diff to take. Nothing was compared." >&2

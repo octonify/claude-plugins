@@ -131,8 +131,13 @@ overrides one:
 5. Quote actual commands and actual output for every test. "Tested and working" is not a report.
 6. "What I chose not to do, and why" is a required section.
 7. Anything found outside the round's scope is reported, not fixed.
-8. Never ship a CI workflow file. 9. Propose promotion before the round closes; deciding it is
-   the planning layer's call. 10. Mark inference as inference and assumption as assumption.
+8. Never ship a CI workflow file.
+9. Propose promotion before the round closes; deciding it is the planning layer's call.
+10. Mark inference as inference and assumption as assumption.
+
+Known defects go by audience: a user-facing defect in a shipped asset goes in that plugin's
+`CHANGELOG.md` under `## Known defects`; a repository-side defect with no user exposure stays in
+the round channel until there are enough to justify a file.
 
 ## Do not
 

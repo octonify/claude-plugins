@@ -48,13 +48,38 @@ For every `docs/knowledge/*.md`, read the YAML frontmatter:
 `scripts/check-staleness.sh` covers the first three if it is installed. Run it and quote it rather
 than duplicating its work.
 
-### 3. `covers_paths` that point nowhere
+### 3. The drift check, and `covers_paths` that point nowhere
 
-For each entry, strip the glob to its literal prefix and test whether anything in the repository
-matches. Report every entry with no match — that document's drift check has been passing
-vacuously.
+Two questions, not one. Run the script for the first; do the second by hand. Both are needed, and
+the reason is in the note at the end of this check — read it before deciding they are duplicates.
 
-Then report the inverse: top-level source directories that no knowledge file covers at all.
+**3a. Run `scripts/check-docs.sh` if it is installed, and interpret what it returns.** Same rule as
+check 2: run it and quote it rather than duplicating its work.
+
+| Exit | What to report |
+|---|---|
+| 2 | **high severity.** The drift check cannot run in this repository, so it has never checked anything. Quote what it printed, including the base refs it rejected. A repository whose drift check has never run is a repository whose knowledge files have never been checked against the code, however green the last run looked. |
+| 1 | drift found, and `STRICT=1` was set. Quote the `DRIFT:` lines. |
+| 0 | it ran against a base it named. Quote the base ref, and quote any `DRIFT:` lines or skipped-document lines it printed — exit 0 with warnings is the default configuration, so 0 does not mean "no findings". |
+| not installed | not applicable, per the rule at the top of this section. |
+
+The script also names every knowledge document it did not check. A document with no `covers_paths`
+key is an opt-out and only worth noting; a document whose key is present but could not be read is a
+broken opt-in — report that one, it was asking to be checked and was not.
+
+**3b. `covers_paths` entries that point nowhere.** For each entry, strip the glob to its literal
+prefix and test whether anything in the repository matches. Report every entry with no match — that
+document's drift check has been passing vacuously.
+
+Then report the inverse: top-level source directories that no knowledge file covers at all. Tooling
+directories are excluded from that inverse by design; see the note on drift-check scope in the
+generated `docs/knowledge/03-architecture.md`.
+
+**Why both.** `check-docs.sh` answers "did covered code change without its document changing", over
+one diff range. 3b answers "is this entry pointing at anything at all", over the whole tree. An
+entry that points nowhere makes the script pass *vacuously* — the script cannot detect it, because
+from inside a diff a pattern that matches nothing is indistinguishable from a pattern whose paths
+did not change. Deleting 3b as duplication removes the only check on the check.
 
 ### 4. Unsourced claims
 
@@ -105,7 +130,9 @@ Sample each `docs/knowledge/*.md` and check its content matches its name. Operat
 `03-architecture.md` breaks the routing table silently: the agent opens the right file, does not
 find the answer, and guesses. Report any file whose content has drifted away from its filename.
 
-Also report routing-table rows in `CLAUDE.md` pointing at files that do not exist.
+Also report routing-table rows in `CLAUDE.md` whose target does not exist — a file, or a directory,
+or a directory that exists but is empty. A row pointing at an empty `docs/decisions/` routes the
+agent to nothing just as effectively as one naming a missing file.
 
 ### 8. Decision record integrity
 

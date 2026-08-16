@@ -13,6 +13,12 @@ covers_paths:
 arc42, 12 sections. Keep only the sections that carry content; an empty section is worse than an
 absent one. For a small system, 1, 3, 5, 7 and 11 carry most of the value.
 Budget: 150 lines. Every non-obvious claim needs [F]/[I]/[U] plus a source and a date.
+
+Scope of the drift check: covers_paths covers the code this document describes. The repository's
+own tooling - the hooks, the checks, the agent configuration - is deliberately outside it. Tooling
+changes rarely and is self-evident from the files themselves, and a knowledge document whose job is
+to describe the checks would cost more structure than it earns. Nothing warns when that tooling is
+deleted, and that is an accepted trade rather than an oversight.
 -->
 
 ## 1. Introduction and goals

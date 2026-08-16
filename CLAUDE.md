@@ -89,15 +89,30 @@ For a change to plugin `<name>`:
 1. Make the change under `plugins/<name>/`, on `next`.
 2. Bump `version` in `plugins/<name>/.claude-plugin/plugin.json`. Semantic versioning. A plugin
    whose design has not been validated in real use stays below `1.0.0`.
-3. Add a `CHANGELOG.md` entry under `plugins/<name>/` for that version, dated.
+3. Convert the changelog under `plugins/<name>/`. This is a conversion, not an addition, and it
+   has four parts: turn `[Unreleased]` into the version heading with today's date; replace the
+   unreleased-state paragraph, which becomes false inside a released block; open a fresh empty
+   `[Unreleased]` above it; add the version's link reference at the bottom. Then retarget any
+   pointer elsewhere in the file that says "Unreleased". Round 5 hit all four and the procedure
+   had warned of none.
 4. Commit, scoped: `git commit -m "feat(<name>): ..."`.
-5. Merge `next` into `main`. This is the only way `main` moves.
+5. Merge into `main` with `git merge --ff-only next`. This is the only way `main` moves.
+   Fast-forward only: the tag is the release marker (ADR 0005), and a merge commit would add a
+   second marker carrying no information the tag does not.
 6. Tag from the plugin directory:
    `claude plugin tag ./plugins/<name> -m "<what changed, in one or two sentences>"`. It creates
-   `<name>--v<version>` annotated, and refuses if `plugin.json` and the marketplace entry disagree
-   on the version. The hand-written equivalent is
-   `git tag -a <name>--v<version> -m "..."`; prefer the command, for the check.
-7. Push: `git push --follow-tags`.
+   `<name>--v<version>` annotated. Its version-agreement check cannot fire in this repository: it
+   refuses only when `plugin.json` and the marketplace entry both carry a `version` and they
+   disagree, and hard rule 1 forbids a marketplace `version` — see the note in ADR 0005. Do not
+   add a marketplace `version` to make the check real; that trades a vacuous check for the
+   two-pinning-fields disagreement the hard rule exists to prevent. The hand-written equivalent
+   is `git tag -a <name>--v<version> -m "..."`.
+7. Push from `main`: `git push --follow-tags`. Then push `next` too — the merge left it behind
+   `origin/main` otherwise, which is backwards for this branch model.
+8. Delivery to an installed user is not automatic. As observed once, on one CLI version, on one
+   machine: `claude plugin marketplace update <marketplace>` refreshes the catalog and moves
+   nothing; the installed plugin stays on its old version until
+   `claude plugin update <plugin>@<marketplace>`; and a session restart is required to apply it.
 
 Steps 2 and 3 are the ones that get skipped. If a change is worth pushing, it is worth a version.
 

@@ -69,7 +69,9 @@ Resolve the location before the exit-code table applies:
   nothing while the table said otherwise.
 - The table names no drift check at all → look in `.githooks/check-docs.sh` and
   `scripts/check-docs.sh` before concluding anything; scaffolds made before the tooling rows
-  existed installed the script without a row. A script found there is run as normal, plus a
+  existed installed the script without a row. That pair is the complete set of locations this
+  plugin has ever installed the checks to; if the scripts move again, whoever moves them extends
+  this list in the same commit, or the probe goes stale without saying so. A script found there is run as normal, plus a
   low-severity finding that the routing table does not name it. Nothing in the table and nothing
   at either location → not applicable, per the rule at the top of this section.
 

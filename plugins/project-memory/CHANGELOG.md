@@ -103,6 +103,12 @@ changes reach no installed user until it is bumped.
   edit to an unrelated file whose path merely contains a protected string is refused, with a
   message about decision immutability that does not apply to it. Low severity: the error is in
   the safe direction and never allows a write it should block. Unfixed as of 2026-08-16.
+- With an absolute `DOCS_DIR`, the "document was touched" suppression in `check-docs.sh` can never
+  fire: the suppression compares `$doc` — absolute in that configuration — against the
+  root-relative paths `git diff --name-only` prints, so the match always fails and a document that
+  was updated alongside its code is still reported as drifting. Low severity: the error is a false
+  positive, never a missed drift, and only in the non-default absolute-`DOCS_DIR` configuration.
+  Unfixed as of 2026-08-16.
 
 ### Corrected
 

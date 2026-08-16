@@ -30,14 +30,15 @@ new version, and a restart of Claude Code applies it.
 
 ## Status of `project-memory`
 
-**Experimental, version `0.1.0`.** The documentation architecture it installs is assembled from
+**Experimental, version `0.2.0`.** The documentation architecture it installs is assembled from
 published conventions — arc42, Nygard ADRs, Conventional Commits — but the way they are combined
 here, along with the numeric budgets, the confidence markers, the `covers_paths` drift check and
 the three-tier durability model, is a proposal that has not been validated on a real project over
 time. The version number says so on purpose.
 
-The shipped scripts have been executed against a scratch repository and against this one. The
-architecture they enforce has not been through a year of maintenance.
+The shipped scripts have been executed against a scratch repository, against this one, and on
+Linux (GNU bash 5.2.21, git 2.43.0, with `jq` present and absent). The architecture they enforce
+has not been through a year of maintenance.
 
 ## Releasing
 

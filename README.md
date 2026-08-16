@@ -12,8 +12,15 @@ updating one has no effect on the others.
 /plugin install project-memory@octonify
 ```
 
-Later, `/plugin marketplace update octonify` refreshes the catalog and offers any plugin whose
-version has changed.
+To update later:
+
+```
+/plugin marketplace update octonify
+/plugin update project-memory@octonify
+```
+
+The first refreshes the catalog; the second is what actually moves an installed plugin to the
+new version, and a restart of Claude Code applies it.
 
 ## Plugins
 

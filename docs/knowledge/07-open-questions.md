@@ -1,6 +1,6 @@
 ---
 as_of: 2026-08-16
-basis_commit: c869528
+basis_commit: 28de1c2
 owner: octonify
 review_trigger: any source contradiction, or a needed fact with no source
 ---
@@ -16,7 +16,7 @@ rest waits until the plugin's own layout stops moving; see item 8.
 
 | # | Question | Why it matters | Blocked on | Raised | Status |
 |---|---|---|---|---|---|
-| 1 | Does a fresh install read plugin content from the marketplace repository's default branch, so that pushing unbumped changes ships them to new installers under the old version string? | Governs the release policy of every round. `version` pins updates for installed users and determines cache paths; what a *new* installer receives is the open half. | Confirmed [F] against the official docs for the first two points; the third — two installs reporting `0.1.0` with different files — has not been observed on a clean machine. | 2026-08-16 | open |
+| 1 | Does a fresh install read plugin content from the marketplace repository's default branch, so that pushing unbumped changes ships them to new installers under the old version string? | Governs the release policy of every round. `version` pins updates for installed users and determines cache paths; what a *new* installer receives is the open half. | Confirmed [F] against the official docs for the first two points; the third — two installs reporting `0.1.0` with different files — has not been observed on a clean machine. | 2026-08-16 | open; narrowed 2026-08-16: the update half is now observed [F] — after the 0.2.0 release, an existing installation moved 0.1.0 → 0.2.0 via `claude plugin update` (marketplace update alone did not move it), and the cached copy was content-identical to the tagged tree. The fresh-install-on-a-clean-machine half remains unobserved and keeps the item open. |
 | 2 | Is there a systematic way to find silent-failure sites, rather than a careful reread each round? | Round 1 found six by reading every shipped file and still missed the `git diff` swallow one line below the guard it added. A third round of rereading will miss something too. | A candidate exists — grep for the syntactic forms `\|\| true`, `\|\| echo`, `2>/dev/null` and `[ -z ... ] && continue`, and require each surviving one to carry a comment saying why silence is right — but it has not been run as a gate. | 2026-08-16 | resolved 2026-08-16: the grep is CLAUDE.md hard rule 10 and had its first run in the round-3 report; it found five deliberate-but-uncommented sites, so round 2's belief that every surviving site was deliberate held, and its belief that they were all annotated did not. |
 | 3 | Does rejecting a *tautological explicit* base ref match what the planning layer wants, or should an explicit base mean "I know what I am doing, do it anyway"? | It is the difference between the round-1 green being closed and being one flag away from returning. | A decision. It is a one-line downgrade to a warning. | 2026-08-16 | open |
 | 4 | Did removing the empty-tree fallback break a case someone depends on? | 0.1.0 shipped; who is running it, and how, is not known. | Evidence from a real installation. | 2026-08-16 | open |

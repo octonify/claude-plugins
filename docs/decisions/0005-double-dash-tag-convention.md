@@ -44,3 +44,12 @@ rather than lightweight, no bare `v<version>` — still holds.
 - Two conventions now appear in the history of this repository's documentation. 0004 stays in
   place, marked superseded, because the record of the turn not taken is what stops it being taken
   again.
+
+**Note (2026-08-16, first exercise):** `claude plugin tag` was run for the first time, for
+`project-memory--v0.2.0`. The marketplace entry carries no `version` field — this repository
+forbids one — and the command accepted that silently: it reported the version from `plugin.json`
+and the marketplace entry it had matched, then created the tag. The agreement check cited above
+therefore fires only when both files carry a version and they disagree; an absent marketplace
+`version` is not a disagreement. In this repository's configuration the validation is weaker than
+the first Consequences bullet reads: the only mechanical refusal left is git's own refusal to
+reuse an existing tag name.

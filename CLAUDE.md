@@ -157,6 +157,8 @@ overrides one:
 8. Never ship a CI workflow file.
 9. Propose promotion before the round closes; deciding it is the planning layer's call.
 10. Mark inference as inference and assumption as assumption.
+11. Any round that edits a knowledge file updates that file's `as_of` and `basis_commit` in the
+    same commit.
 
 Known defects go by audience: a user-facing defect in a shipped asset goes in that plugin's
 `CHANGELOG.md` under `## Known defects`; a repository-side defect with no user exposure stays in

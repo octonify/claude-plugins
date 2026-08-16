@@ -8,6 +8,12 @@ below. Without that bump, no installed user receives the change.
 
 ## [Unreleased]
 
+0.2.0's four shipped scripts were verified on Linux after release, 2026-08-16: GNU bash 5.2.21,
+git 2.43.0, GNU sed 4.9, with `jq` present and absent. Every verdict, exit code and message
+matched the Windows transcripts, including detached HEAD, a repository path containing a space,
+and three locales. The scripts run were verified byte-identical to the `project-memory--v0.2.0`
+tag. macOS remains untested.
+
 ### Changed
 
 - `audit` check 8 states the one exception to decision-record immutability — a dated, append-only

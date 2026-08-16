@@ -45,6 +45,20 @@ changes reach no installed user until it is bumped.
 - `protect-files.sh` allowed a write in silence when it could not read the tool input. It still
   allows — a protection hook that cannot read its input must not block every edit — but it now says
   so on stderr, in different words for the `jq` path and the fallback path.
+- Without `jq`, `protect-files.sh` allowed writes to protected files whenever the path arrived
+  JSON-escaped — every Windows path does — because the `sed` fallback kept the doubled backslashes
+  and the normalised path matched no protected pattern. The fallback now undoes the common JSON
+  escapes (`\\`, `\"`, `\/`) in a single pass before comparing. It is still not a JSON parser and
+  `init` step 7 says exactly what its limits are; installing `jq` remains what makes the hook
+  reliable.
+- A knowledge document whose `covers_paths` key is present but unreadable is now found on every
+  run of `check-docs.sh`, not only on runs where some file changed: a discarded opt-in is a
+  property of the document, not of the diff. Documents with no `covers_paths` key at all are named
+  in one summary line per run instead of one line each, and the closing warning names what was
+  actually found — drift, a broken opt-in, or both — instead of calling every finding drift.
+- `check-docs.sh` no longer asserts "one branch and no remote" when the enumeration of branches or
+  remotes itself failed; those runs get the generic no-base message, whose advice does not depend
+  on repository shape.
 
 ### Changed
 

@@ -3,6 +3,10 @@
 # and the document did not, say so.
 #
 # Usage:   ./scripts/check-docs.sh [base-ref]
+#          Runs from anywhere inside the repository: the script changes to the
+#          repository root before doing anything. A relative DOCS_DIR is
+#          therefore relative to the repository root, not to the caller's
+#          working directory; an absolute DOCS_DIR is used as-is.
 #
 # Base ref: the first argument if given, otherwise the first of
 # origin/main, origin/master, main, master that exists, is not the branch that
@@ -13,10 +17,10 @@
 # Exit:    0  ran against a named base; no findings, or findings with STRICT=0.
 #             A finding is drift, or a covers_paths key that could not be read.
 #          1  findings and STRICT=1
-#          2  could not run: no usable base ref, an explicitly given base that is
-#             not usable by the same rules, no common ancestor, or a failing
-#             `git diff`. Independent of STRICT: this is an inability to run,
-#             not a finding.
+#          2  could not run: not inside a git repository, no usable base ref, an
+#             explicitly given base that is not usable by the same rules, no
+#             common ancestor, or a failing `git diff`. Independent of STRICT:
+#             this is an inability to run, not a finding.
 #
 # Reads the `covers_paths:` list from the YAML frontmatter of each
 # docs/knowledge/*.md file, in either the block-sequence or the flow
@@ -27,6 +31,21 @@
 # still hear about it. Documents with no covers_paths key at all are opt-outs,
 # reported in one summary line for the whole run, informational only.
 set -uo pipefail
+
+# A relative DOCS_DIR and the paths `git diff --name-only` prints are both
+# resolved against the repository root, and they agree only when the script
+# stands there. Run from a subdirectory, the document glob would match nothing
+# and the run would be a false green. So resolve the root instead of trusting
+# the caller. An absolute DOCS_DIR is unaffected by the cd.
+if ! ROOT="$(git rev-parse --show-toplevel)"; then
+  echo "check-docs: not inside a git repository - git's own message is above." >&2
+  echo "            Nothing was checked." >&2
+  exit 2
+fi
+if ! cd "$ROOT"; then
+  echo "check-docs: could not change to the repository root '${ROOT}'. Nothing was checked." >&2
+  exit 2
+fi
 
 DOCS_DIR="${DOCS_DIR:-docs/knowledge}"
 STRICT="${STRICT:-0}"

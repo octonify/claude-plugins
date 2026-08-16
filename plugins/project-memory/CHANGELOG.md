@@ -59,6 +59,15 @@ changes reach no installed user until it is bumped.
 - `check-docs.sh` no longer asserts "one branch and no remote" when the enumeration of branches or
   remotes itself failed; those runs get the generic no-base message, whose advice does not depend
   on repository shape.
+- Both check scripts assumed they were run from the repository root and never verified it. A
+  relative `DOCS_DIR` resolves against the working directory while `git diff --name-only` prints
+  root-relative paths, so a run from any subdirectory found no documents, printed "no documents in
+  docs/knowledge, nothing to check" and exited 0 — a full green from a repository with real drift,
+  decided by where the operator was standing. Both scripts now resolve
+  `git rev-parse --show-toplevel` and change to it before doing anything, and exit 2 with a message
+  when run outside a git repository. This changes the meaning of a relative `DOCS_DIR` from
+  "relative to the caller's working directory" to "relative to the repository root"; an absolute
+  `DOCS_DIR` behaves as before.
 
 ### Changed
 

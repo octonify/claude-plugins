@@ -134,7 +134,14 @@ is refusing to report success without having compared anything. Say that when it
 the explicit-base form, `./scripts/check-docs.sh <ref>`, for the first branch the user cuts.
 
 Exit codes for `check-docs.sh`: 0 ran against a named base, 1 drift found under `STRICT=1`, 2 could
-not determine a base. 2 is independent of `STRICT`, because an inability to run is not a finding.
+not run — not inside a git repository, or no usable base. 2 is independent of `STRICT`, because an
+inability to run is not a finding.
+
+Both scripts change to the repository root before doing anything, so they can be run from any
+directory inside the repository. A relative `DOCS_DIR` is therefore relative to the repository
+root, not to the caller's working directory; an absolute `DOCS_DIR` is used as-is. That is the
+correct semantic for a repository-level check, and it means the operator's location can never turn
+a run with findings into a green one.
 
 `check-staleness.sh` uses the same three codes: 0 ran, 1 findings under `STRICT=1`, 2 could not run
 at all — no `HEAD` to count against. A single document whose commit count cannot be taken is

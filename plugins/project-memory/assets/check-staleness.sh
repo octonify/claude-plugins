@@ -2,6 +2,10 @@
 # Staleness check: how far behind HEAD each knowledge document's basis_commit is.
 #
 # Usage:   ./scripts/check-staleness.sh
+#          Runs from anywhere inside the repository: the script changes to the
+#          repository root before doing anything. A relative DOCS_DIR is
+#          therefore relative to the repository root, not to the caller's
+#          working directory; an absolute DOCS_DIR is used as-is.
 # Env:     MAX_BEHIND (default 200), DOCS_DIR (default docs/knowledge), STRICT (default 0)
 #
 # Exit:    0  ran; either no findings, or findings with STRICT=0
@@ -27,9 +31,26 @@ FOUND_DOC=0
 INSPECTED=0
 FINDINGS=0
 
+# A relative DOCS_DIR is resolved against the repository root, and the script
+# must stand there for its glob to see the documents. Run from a subdirectory,
+# it would report "no documents" and exit 0 - a false green. So resolve the
+# root instead of trusting the caller. An absolute DOCS_DIR is unaffected by
+# the cd.
+if ! ROOT="$(git rev-parse --show-toplevel)"; then
+  echo "check-staleness: not inside a git repository - git's own message is above." >&2
+  echo "                 Nothing was checked." >&2
+  exit 2
+fi
+if ! cd "$ROOT"; then
+  echo "check-staleness: could not change to the repository root '${ROOT}'. Nothing was checked." >&2
+  exit 2
+fi
+
+# The root resolution above already proved this is a git repository, so what
+# this catches is a repository with no commits yet.
 if ! git rev-parse --verify --quiet HEAD >/dev/null; then
-  echo "check-staleness: no HEAD to count against - this is either not a git" >&2
-  echo "                 repository or it has no commits yet. Nothing was checked." >&2
+  echo "check-staleness: no HEAD to count against - this repository has no" >&2
+  echo "                 commits yet. Nothing was checked." >&2
   exit 2
 fi
 

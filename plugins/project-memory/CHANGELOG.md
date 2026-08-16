@@ -8,6 +8,21 @@ below. Without that bump, no installed user receives the change.
 
 ## [Unreleased]
 
+## [0.3.0] — 2026-08-16
+
+This release changes the shape of what `init` writes: the check scripts install into `.githooks/`
+instead of a new `scripts/` directory, the plugin's methodology ships as
+`.claude/rules/project-memory.md` instead of living inside the generated `CLAUDE.md`, and
+`docs/decisions/` is created with a real ADR 0001 instead of being promised and absent. The design
+remains unvalidated on a real project over time; the version stays below `1.0.0` deliberately.
+macOS remains untested — the exposure is two `sed` lines relying on BRE portability, recorded as
+open question 9.
+
+**If you scaffolded before 0.3.0:** your existing layout keeps working — the scripts never
+hardcoded their own location, and `audit` probes the old `scripts/` location as well as
+`.githooks/`. Move the two check scripts into `.githooks/` and update the two Commands lines in
+your `CLAUDE.md` only if you want the new layout.
+
 0.2.0's four shipped scripts were verified on Linux after release, 2026-08-16: GNU bash 5.2.21,
 git 2.43.0, GNU sed 4.9, with `jq` present and absent. Every verdict, exit code and message
 matched the Windows transcripts, including detached HEAD, a repository path containing a space,
@@ -272,5 +287,6 @@ turning them into real files are listed in the repository's initial commit and s
   branch, and in the `sed` fallback a JSON-escaped Windows path was not matched and the write was
   allowed.
 
+[0.3.0]: https://github.com/octonify/claude-plugins/releases/tag/project-memory--v0.3.0
 [0.2.0]: https://github.com/octonify/claude-plugins/releases/tag/project-memory--v0.2.0
 [0.1.0]: https://github.com/octonify/claude-plugins/releases/tag/project-memory--v0.1.0

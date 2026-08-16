@@ -47,6 +47,11 @@ deliberate — see `docs/decisions/0002-generic-marketplace-name.md`.
    non-Windows machine with `bad interpreter: /usr/bin/env bash^M`.
 9. Scripts shipped as plugin assets are tested by running them before they are committed. They are
    installed on other people's machines; an illustrative script is not acceptable.
+10. **A shipped script may not discard an error silently.** Every occurrence of `|| true`,
+    `|| echo <value>`, `2>/dev/null`, and `[ -z "$x" ] && continue|exit 0` carries a comment on
+    the line above saying why silence is correct there. An uncommented occurrence is a defect.
+    Two known limits: this covers only shell, and it cannot see the same defect in a skill file,
+    where an instruction lets an agent conclude "not applicable" when it means "I could not tell".
 
 ## Adding a plugin
 
@@ -97,9 +102,27 @@ Steps 2 and 3 are the ones that get skipped. If a change is worth pushing, it is
 | why the tag separator is `--` | `docs/decisions/0005-double-dash-tag-convention.md` |
 | why a check exits 2 rather than passing quietly | `docs/decisions/0006-checks-fail-loudly-when-they-cannot-run.md` |
 | why the commit hook is not enforcement | `docs/decisions/0007-local-git-hooks-are-feedback-not-enforcement.md` |
+| why work happens on `next`, not `main` | `docs/decisions/0008-default-branch-is-the-release-channel.md` |
 | what `project-memory` installs, and why | `plugins/project-memory/reference/architecture.md` |
 | the source material `project-memory` was distilled from | `project-memory-structure-template.md` |
 | what this repository does not know | `docs/knowledge/07-open-questions.md` |
+
+## Rounds with the planning layer
+
+Work sometimes arrives as numbered request rounds from a planning layer, exchanged through the
+gitignored `agent-exchange/` directory. Requests and reports are channel content and stay local,
+never on GitHub; these rules are process and live here. They hold unless a request explicitly
+overrides one:
+
+1. One round, one theme, one plugin.
+2. Never bump `version`, never tag, never push, unless the request says so explicitly.
+3. The report is a file: `report.md` in the round directory, not only terminal output.
+4. Attach the complete current text of every file the round touched, prefixed `attach-`.
+5. Quote actual commands and actual output for every test. "Tested and working" is not a report.
+6. "What I chose not to do, and why" is a required section.
+7. Anything found outside the round's scope is reported, not fixed.
+8. Never ship a CI workflow file. 9. Propose promotion before the round closes; deciding it is
+   the planning layer's call. 10. Mark inference as inference and assumption as assumption.
 
 ## Do not
 

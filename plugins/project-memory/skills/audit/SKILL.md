@@ -68,8 +68,11 @@ key is an opt-out and only worth noting; a document whose key is present but cou
 broken opt-in — report that one, it was asking to be checked and was not.
 
 **3b. `covers_paths` entries that point nowhere.** For each entry, strip the glob to its literal
-prefix and test whether anything in the repository matches. Report every entry with no match — that
-document's drift check has been passing vacuously.
+prefix and test whether anything in the repository matches it, **anchored at the start of the
+path and with a literal `.` treated as a literal `.`** — the same rules `check-docs.sh` applies,
+so the two never answer the same question differently. `src/api/**` is not matched by
+`vendor/foo/src/api/x.ts`, and `src/v1.2/` is not matched by `src/v1x2/`. Report every entry with
+no match — that document's drift check has been passing vacuously.
 
 Then report the inverse: top-level source directories that no knowledge file covers at all. Tooling
 directories are excluded from that inverse by design; see the note on drift-check scope in the

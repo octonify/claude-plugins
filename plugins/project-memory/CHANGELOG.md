@@ -6,6 +6,40 @@ versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 The `version` field in `.claude-plugin/plugin.json` must be bumped in the same commit as any entry
 below. Without that bump, no installed user receives the change.
 
+## [Unreleased]
+
+Not released. `version` in `.claude-plugin/plugin.json` is deliberately still `0.1.0`; these
+changes reach no installed user until it is bumped.
+
+### Fixed
+
+- `check-docs.sh` reported success without having compared anything. `resolve_base()` accepted the
+  currently checked-out branch as a base, so in a repository with no remote whose branch is
+  `master` it resolved to `master`, `git diff master...HEAD` was empty by construction, and the
+  script printed "nothing to check" and exited 0 forever. A base ref that is the checked-out
+  branch, or that points at `HEAD`, is now rejected as the tautology it is, and a run with no
+  usable base exits **2** — naming every candidate tried and why each was rejected. Exit 2 is
+  independent of `STRICT`, because an inability to run is not a finding.
+- `check-docs.sh` now names the base ref on every run, on success and on failure alike, and says
+  `no drift against <base>` on a clean run. Silence about the base is how the defect hid.
+- An explicit base argument that cannot serve as a base is now an error rather than a reason to
+  fall back to the default chain.
+- `check-docs.sh` exited 0 with an empty diff when the base and `HEAD` had no common ancestor,
+  which reads as "no changes". It now exits 2.
+
+### Changed
+
+- `init` states in its final report that `core.hooksPath` is local config, that the hook is active
+  in that clone only, that every other clone needs `git config core.hooksPath .githooks`, and that
+  the line is written down in `CLAUDE.md`. A local hook is fast feedback, not enforcement, and the
+  report now says that too.
+- The generated `CLAUDE.md` carries the setup line, one line, under `## Commands`.
+- `init` explains the new exit 2 from `check-docs.sh`, which is the expected first run on a
+  freshly scaffolded repository whose only branch is the one checked out.
+- `reference/architecture.md` documents the exit-code contract of both scripts, corrects the
+  enforcement table row for the `commit-msg` hook, and recommends — without shipping — a CI check
+  on commit subjects.
+
 ## [0.1.0] — 2026-08-16
 
 Initial release. **Experimental.** The structure this plugin installs has not been validated on a

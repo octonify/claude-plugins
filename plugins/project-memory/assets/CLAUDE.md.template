@@ -32,6 +32,7 @@
 - Build: `{{BUILD_COMMAND}}`
 - Test: `{{TEST_COMMAND}}`
 - Lint: `{{LINT_COMMAND}}`
+- Hooks, once per clone: `git config core.hooksPath .githooks`
 - Docs drift check: `./scripts/check-docs.sh`
 - Staleness check: `./scripts/check-staleness.sh`
 - Decision log: `git log --grep='^Decision:' --pretty=format:'%h %ad %s%n%b' --date=short`

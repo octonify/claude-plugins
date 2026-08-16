@@ -318,7 +318,7 @@ request. Everything here is a mechanism.
 | Detect a doc is behind the code | yes, via `basis_commit` | yes |
 | Detect an unsourced claim | yes, via markers | yes |
 | Prevent a doc going stale | **no** | yes, CI blocks the merge |
-| Prevent unusable commit messages | **no** | yes, `commit-msg` hook |
+| Prevent unusable commit messages | **no** | only in CI — see 4.1; the `commit-msg` hook is fast feedback, not enforcement |
 | Prevent editing an accepted ADR | **no** | yes, `PreToolUse` hook |
 | Survive context compaction | **no** | yes, `SessionStart` hook |
 
@@ -330,6 +330,14 @@ tracked directory instead, once per clone:
 ```bash
 git config core.hooksPath .githooks
 ```
+
+**That line is the catch, and it is why this hook is not enforcement.** `core.hooksPath` is local
+config: it is not committed and it does not travel with a clone. Anyone who clones the repository
+gets the hook file and no hook execution, with no warning of any kind, and `git commit --no-verify`
+skips it even where it is configured. Treat it as fast local feedback — a typo caught in the second
+before it becomes history. If the commit format has to hold for everyone, the same check has to run
+server-side in CI, over the commits in the pull request. Write the setup line into `CLAUDE.md` so a
+new clone can find it without being told.
 
 `.githooks/commit-msg` (must be `chmod +x`):
 

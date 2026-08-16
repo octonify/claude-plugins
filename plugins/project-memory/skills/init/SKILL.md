@@ -82,9 +82,16 @@ is committed as `100644` and is not executable in any fresh clone on Linux or ma
 then silently never runs. Verify with `git ls-files -s .githooks/commit-msg`; it must start
 `100755`.
 
-`core.hooksPath` is per-clone local config, so tell the user that every other clone needs the
-`git config` line once. If `core.hooksPath` is already set to something else, do not change it —
-report the conflict and stop at copying the file in.
+`core.hooksPath` is per-clone **local** config. It is not committed and it does not travel with a
+clone: everyone else gets the hook file and no hook execution, with no warning of any kind. Two
+consequences, both required:
+
+- The generated `CLAUDE.md` carries the setup line — `git config core.hooksPath .githooks` under
+  `## Commands`. Keep it. It is one line and it is the only thing a new clone has to be told.
+- Step 9's report says so explicitly, in the wording given there.
+
+If `core.hooksPath` is already set to something else, do not change it — report the conflict and
+stop at copying the file in.
 
 ## Step 6 — Install the checks as warnings
 
@@ -114,7 +121,14 @@ Both scripts exit 0 on findings by default and only fail when `STRICT=1` is set.
 way. Do not add them to CI as blocking, and do not set `STRICT=1` on this run. Say explicitly
 that promotion to blocking is a later, separate decision, once the output is quiet.
 
-Run both once and show the output.
+Run both once and show the output. **`check-docs.sh` exits 2 when it cannot determine a base ref**
+— on a repository whose only branch is the one checked out, which is the usual state of a freshly
+scaffolded project, that is the expected first run. It is not a failure of the scaffold: the check
+is refusing to report success without having compared anything. Say that when it happens, and name
+the explicit-base form, `./scripts/check-docs.sh <ref>`, for the first branch the user cuts.
+
+Exit codes for `check-docs.sh`: 0 ran against a named base, 1 drift found under `STRICT=1`, 2 could
+not determine a base. 2 is independent of `STRICT`, because an inability to run is not a finding.
 
 ## Step 7 — Offer the agent hooks
 
@@ -143,11 +157,25 @@ Only run this if a remote named `origin` exists and the user agrees.
 
 ## Step 9 — Report
 
-Print three lists, in this order:
+Print three lists and one warning, in this order:
 
 1. **Created** — every path written.
 2. **Skipped** — every path not written, with the reason (existed / declined / not applicable).
-3. **Next** — two or three concrete actions. Pick from: fill `07-open-questions.md` with what is
+3. **The hook is active in this clone only.** Not a footnote; its own block, before `Next`. State
+   all three parts:
+
+   > The `commit-msg` hook is active in **this clone only**. `core.hooksPath` is local git config:
+   > it is not committed and it does not travel. Every other clone — every teammate, every CI
+   > checkout, every fresh clone of your own — gets the hook file and no hook execution, silently.
+   > Each one needs this once: `git config core.hooksPath .githooks`
+   > The line is written down in `CLAUDE.md` under `## Commands`, so a new clone can find it
+   > without being told.
+
+   A local hook is fast feedback, not enforcement. It is also skippable with `--no-verify`. If the
+   commit format has to hold for everyone, that check belongs in CI, where it runs on the server
+   rather than on whoever remembered to configure their clone.
+
+4. **Next** — two or three concrete actions. Pick from: fill `07-open-questions.md` with what is
    currently unclear (usually the highest-value next hour); make one real commit to confirm the
    hook fires; add `covers_paths` globs once `03-architecture.md` has real content; run
    `/project-memory:audit` in a week.

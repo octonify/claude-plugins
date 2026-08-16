@@ -184,13 +184,29 @@ block an action regardless of what the model decides, a hook is required.
 | Detect a doc is behind the code | yes, via `basis_commit` | yes |
 | Detect an unsourced claim | yes, via markers | yes |
 | Prevent a doc going stale | no | yes, CI blocks the merge |
-| Prevent unusable commit messages | no | yes, `commit-msg` hook |
+| Prevent unusable commit messages | no | only in CI; the `commit-msg` hook is fast feedback, not enforcement |
 | Prevent editing an accepted ADR | no | yes, `PreToolUse` hook |
 | Survive context compaction | no | yes, `SessionStart` hook |
 
 `.git/hooks` is not committed, so hooks placed there exist on one machine only. `core.hooksPath`
-pointing at a tracked directory is what makes them survive a clone — but it is local config and
-must be set once per clone, which is the one manual step this structure cannot remove.
+pointing at a tracked directory is what makes the hook *file* survive a clone — but the setting
+itself is local config and must be set once per clone, which is the one manual step this structure
+cannot remove.
+
+**The local hook is not enforcement, and calling it that is the mistake.** It runs only where
+someone ran `git config core.hooksPath .githooks`, and `git commit --no-verify` skips it. A clone
+that never ran the line accepts every malformed subject in silence, and the first sign of it is a
+`git log --grep='^Decision:'` that returns nothing a year later. Treat the hook as what it is: a
+fast local check that catches a typo in the second before it becomes history.
+
+**Recommended, not shipped: a CI check on commit subjects.** If the format has to hold for
+everyone, validate it server-side — a job on pull requests that runs the same
+`^(feat|fix|docs|...)(\(scope\))?!?: ` match over the commits in the range, using the same
+`.githooks/commit-msg` file as its implementation so the two cannot disagree. This plugin does not
+install such a workflow. CI shape is per-project (provider, trigger, required-check
+configuration), a generated workflow file is the kind of thing that is merged unread, and a check
+that blocks the day it lands on a repository with an existing backlog gets deleted rather than
+satisfied. Recommend it, once, in `init`'s report; let the project write it.
 
 Hook exit-code semantics: **exit 2 blocks the action** and stderr is fed back to the model as
 feedback; **exit 0 makes no decision** and the normal permission flow continues. For richer
@@ -205,6 +221,22 @@ own — nested and path-scoped rules are not, which is what that hook covers.
 backlog, and the first response to a check that always fails is to disable it. Both scripts exit 0
 on findings and only fail under `STRICT=1`. Promote once the output is quiet, as a separate,
 deliberate decision.
+
+**Exit-code contract of the two scripts** — unrelated to the Claude Code hook codes above, which
+are a different mechanism:
+
+| Code | Meaning |
+|---|---|
+| 0 | the check ran, against a base it named; findings, if any, were warnings |
+| 1 | findings, and `STRICT=1` was set |
+| 2 | the check could **not run** — `check-docs.sh` could not determine a base ref |
+
+`STRICT` governs whether *findings* fail the build. It has no bearing on 2: "I cannot determine
+what to compare against" is not a finding, it is an inability to do the job, and it must be loud
+whatever `STRICT` says. A check that inspects nothing and exits 0 is worse than no check, because
+it also produces a green tick. `check-docs.sh` therefore refuses any base ref that is the
+currently checked-out branch or that points at `HEAD`: `git diff <that>...HEAD` is empty by
+construction, so a pass proves only that the comparison never happened.
 
 **What still cannot be enforced:** no mechanism can tell you a document is *wrong* rather than
 merely *old*, that a confidence marker was applied truthfully, or that an open question was

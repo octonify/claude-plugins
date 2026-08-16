@@ -15,3 +15,6 @@ desktop.ini
 # Scratch space used while testing plugins locally
 /tmp/
 /scratch/
+
+# Round-based exchange between planning and execution layers, local only
+/agent-exchange/

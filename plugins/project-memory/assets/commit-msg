@@ -7,6 +7,10 @@ MSG_FILE="$1"
 
 # Strip a trailing CR so the hook behaves identically on Windows checkouts,
 # and drop comment lines so `git commit` templates do not become the subject.
+# The trailing fallback is deliberate: under pipefail, grep finding no
+# non-comment line (or head closing the pipe early) would kill the hook here;
+# an empty FIRST_LINE must instead reach the check below, which rejects it
+# with its own message.
 FIRST_LINE="$(grep -v '^#' "$MSG_FILE" | sed -e 's/\r$//' -e '/^[[:space:]]*$/d' | head -n1 || true)"
 
 if [ -z "$FIRST_LINE" ]; then

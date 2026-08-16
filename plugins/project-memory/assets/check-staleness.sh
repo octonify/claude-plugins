@@ -68,6 +68,9 @@ for doc in "$DOCS_DIR"/*.md; do
     continue
   fi
 
+  # git's stderr is suppressed deliberately: the failure itself is loud - the
+  # UNKNOWN line below, and STATUS=1 - and the script's own line names the
+  # document, which git's message would not.
   if ! git cat-file -e "${basis}^{commit}" 2>/dev/null; then
     echo "UNKNOWN commit in $doc: $basis" >&2
     STATUS=1

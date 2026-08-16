@@ -51,12 +51,17 @@ DOCS_DIR="${DOCS_DIR:-docs/knowledge}"
 STRICT="${STRICT:-0}"
 CANDIDATES="origin/main origin/master main master"
 
+# Both fallbacks are deliberate: an unborn HEAD leaves HEAD_SHA empty and a
+# detached HEAD leaves CURRENT_BRANCH empty. Empty is a state to carry, not an
+# error to report - every later use is guarded with [ -n ... ].
 HEAD_SHA="$(git rev-parse --verify --quiet HEAD || true)"
 CURRENT_BRANCH="$(git symbolic-ref --quiet --short HEAD || true)"
 
 # Why a candidate cannot serve as a base, or empty if it can.
 reject_reason() {
   candidate="$1"
+  # The fallback is deliberate: an empty sha is the "does not exist" answer
+  # this function exists to detect, and it is reported loudly just below.
   sha="$(git rev-parse --verify --quiet "${candidate}^{commit}" || true)"
   if [ -z "$sha" ]; then
     printf '%s\n' "does not exist"

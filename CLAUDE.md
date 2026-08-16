@@ -88,8 +88,11 @@ Steps 2 and 3 are the ones that get skipped. If a change is worth pushing, it is
 | why versions are per plugin | `docs/decisions/0003-independent-plugin-versions.md` |
 | why tags carry a plugin prefix | `docs/decisions/0004-scoped-git-tags.md` (superseded) |
 | why the tag separator is `--` | `docs/decisions/0005-double-dash-tag-convention.md` |
+| why a check exits 2 rather than passing quietly | `docs/decisions/0006-checks-fail-loudly-when-they-cannot-run.md` |
+| why the commit hook is not enforcement | `docs/decisions/0007-local-git-hooks-are-feedback-not-enforcement.md` |
 | what `project-memory` installs, and why | `plugins/project-memory/reference/architecture.md` |
 | the source material `project-memory` was distilled from | `project-memory-structure-template.md` |
+| what this repository does not know | `docs/knowledge/07-open-questions.md` |
 
 ## Do not
 

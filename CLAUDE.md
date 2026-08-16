@@ -61,21 +61,28 @@ Exactly three things change:
 The GitHub repository description is **not** one of them. Do not touch it as part of adding a
 plugin.
 
+## Branches
+
+`main` is the release channel: it is the default branch, so it is what users install from, and it
+holds only released state. Work happens on `next`. `main` moves only at release, by merging
+`next` into it. See `docs/decisions/0008-default-branch-is-the-release-channel.md`.
+
 ## Release procedure
 
 For a change to plugin `<name>`:
 
-1. Make the change under `plugins/<name>/`.
+1. Make the change under `plugins/<name>/`, on `next`.
 2. Bump `version` in `plugins/<name>/.claude-plugin/plugin.json`. Semantic versioning. A plugin
    whose design has not been validated in real use stays below `1.0.0`.
 3. Add a `CHANGELOG.md` entry under `plugins/<name>/` for that version, dated.
 4. Commit, scoped: `git commit -m "feat(<name>): ..."`.
-5. Tag from the plugin directory:
+5. Merge `next` into `main`. This is the only way `main` moves.
+6. Tag from the plugin directory:
    `claude plugin tag ./plugins/<name> -m "<what changed, in one or two sentences>"`. It creates
    `<name>--v<version>` annotated, and refuses if `plugin.json` and the marketplace entry disagree
    on the version. The hand-written equivalent is
    `git tag -a <name>--v<version> -m "..."`; prefer the command, for the check.
-6. Push: `git push --follow-tags`.
+7. Push: `git push --follow-tags`.
 
 Steps 2 and 3 are the ones that get skipped. If a change is worth pushing, it is worth a version.
 

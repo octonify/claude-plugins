@@ -10,8 +10,9 @@
 # last two tests is not a base: `git diff <it>...HEAD` is empty by construction
 # and the check would report success without having compared anything.
 #
-# Exit:    0  ran against a named base; either no drift, or drift with STRICT=0
-#          1  drift found and STRICT=1
+# Exit:    0  ran against a named base; no findings, or findings with STRICT=0.
+#             A finding is drift, or a covers_paths key that could not be read.
+#          1  findings and STRICT=1
 #          2  could not run: no usable base ref, an explicitly given base that is
 #             not usable by the same rules, no common ancestor, or a failing
 #             `git diff`. Independent of STRICT: this is an inability to run,
@@ -19,10 +20,12 @@
 #
 # Reads the `covers_paths:` list from the YAML frontmatter of each
 # docs/knowledge/*.md file, in either the block-sequence or the flow
-# (`covers_paths: [a/**]`) spelling. Every document that is not checked is named
-# on stderr: a document with no covers_paths key is an opt-out and is only
-# reported, a document whose key is present but unreadable is a broken opt-in
-# and is a finding, because a discarded opt-in otherwise contributes to a green.
+# (`covers_paths: [a/**]`) spelling. Key presence is classified on every run
+# that reaches the documents, before the no-changes early exit: a document
+# whose key is present but unreadable is a broken opt-in and a finding - it is
+# a property of the document, not of the diff, so a quiet repository must
+# still hear about it. Documents with no covers_paths key at all are opt-outs,
+# reported in one summary line for the whole run, informational only.
 set -uo pipefail
 
 DOCS_DIR="${DOCS_DIR:-docs/knowledge}"
@@ -68,9 +71,15 @@ else
   if [ -z "$BASE" ]; then
     # Two different situations end up here, and telling the operator to pass the
     # ref the work branched from is impossible advice in the second one.
-    remotes="$(git remote 2>/dev/null || true)"
-    branches="$(git for-each-ref --format='%(refname:short)' refs/heads 2>/dev/null | wc -l)"
-    if [ -z "$remotes" ] && [ "$branches" -le 1 ]; then
+    # If either enumeration fails, the shape of this repository was never
+    # observed and the "one branch and no remote" message would be a guess
+    # presented as fact. SHAPE_KNOWN routes that case to the generic message,
+    # whose advice is actionable either way. stderr is suppressed because the
+    # failure is already handled by that routing, not ignored.
+    SHAPE_KNOWN=1
+    remotes="$(git remote 2>/dev/null)" || SHAPE_KNOWN=0
+    branches="$(git for-each-ref --format='%(refname:short)' refs/heads 2>/dev/null | wc -l)" || SHAPE_KNOWN=0
+    if [ "$SHAPE_KNOWN" -eq 1 ] && [ -z "$remotes" ] && [ "$branches" -le 1 ]; then
       cat >&2 <<EOF
 check-docs: this repository has one branch and no remote, so no base ref can
             exist yet. There is nothing to compare against, and that is the
@@ -114,10 +123,9 @@ if ! CHANGED="$(git diff --name-only "${BASE}...HEAD")"; then
   exit 2
 fi
 
-if [ -z "$CHANGED" ]; then
-  echo "check-docs: no changes against ${BASE}, nothing to check."
-  exit 0
-fi
+# The empty-CHANGED early exit is further down, after the documents have been
+# classified: a broken covers_paths opt-in is a property of the document, not
+# of the diff, and must be found even on a run with no changes.
 
 # Emit the covers_paths entries of one document, bounded to the frontmatter block.
 # Both YAML spellings are read: the block sequence, and the flow form
@@ -172,62 +180,99 @@ escape_bre() {
 
 STATUS=0
 FOUND_DOC=0
+BROKEN_OPTIN=0
+DRIFT_FOUND=0
+NO_KEY_DOCS=""
 
+# First pass: classify key presence, on every run. A key that is present but
+# unreadable is a discarded opt-in - a defect in the document that is equally
+# true when nothing changed, so it must not hide behind the no-changes exit.
+# Documents with no key at all are collected for one summary line, not printed
+# one line each: opting out is legitimate, and a check that repeats five
+# legitimate opt-outs on every run is a check that gets ignored.
 for doc in "$DOCS_DIR"/*.md; do
   [ -f "$doc" ] || continue
   FOUND_DOC=1
-
-  paths="$(covers_paths_of "$doc")"
-  if [ -z "$paths" ]; then
-    if has_covers_paths_key "$doc"; then
+  if has_covers_paths_key "$doc"; then
+    if [ -z "$(covers_paths_of "$doc")" ]; then
       echo "check-docs: $doc has a covers_paths key that could not be read; its opt-in was discarded and it was not checked." >&2
+      BROKEN_OPTIN=1
       STATUS=1
-    else
-      echo "check-docs: $doc has no covers_paths key; not covered by the drift check." >&2
     fi
-    continue
+  else
+    NO_KEY_DOCS="${NO_KEY_DOCS:+${NO_KEY_DOCS}, }${doc}"
   fi
-
-  doc_touched=false
-  if printf '%s\n' "$CHANGED" | grep -qxF "$doc"; then
-    doc_touched=true
-  fi
-  [ "$doc_touched" = true ] && continue
-
-  while IFS= read -r p; do
-    [ -z "$p" ] && continue
-    # Reduce a glob to its literal prefix: src/api/** -> src/api/
-    prefix="${p%%\**}"
-    # A pattern that is nothing but a glob would match every changed file.
-    if [ -z "$prefix" ]; then
-      echo "check-docs: ignoring unbounded pattern '$p' in $doc" >&2
-      continue
-    fi
-    # Anchored: an unanchored match reports src/api/** as drifting because
-    # vendor/foo/src/api/x.ts changed.
-    if printf '%s\n' "$CHANGED" | grep -q -- "^$(escape_bre "$prefix")"; then
-      echo "DRIFT: $p changed but $doc was not updated" >&2
-      STATUS=1
-      break
-    fi
-  done <<EOF
-$paths
-EOF
 done
+
+if [ -n "$NO_KEY_DOCS" ]; then
+  echo "check-docs: not covered by the drift check (no covers_paths key): ${NO_KEY_DOCS}" >&2
+fi
 
 if [ "$FOUND_DOC" -eq 0 ]; then
   echo "check-docs: no documents in ${DOCS_DIR}, nothing to check."
   exit 0
 fi
 
+# Second pass: drift, only meaningful when something changed.
+if [ -z "$CHANGED" ]; then
+  echo "check-docs: no changes against ${BASE}, nothing to check."
+else
+  for doc in "$DOCS_DIR"/*.md; do
+    [ -f "$doc" ] || continue
+
+    # An empty result here was already classified and reported by the first
+    # pass; this pass only walks readable opt-ins.
+    paths="$(covers_paths_of "$doc")"
+    [ -z "$paths" ] && continue
+
+    doc_touched=false
+    if printf '%s\n' "$CHANGED" | grep -qxF "$doc"; then
+      doc_touched=true
+    fi
+    [ "$doc_touched" = true ] && continue
+
+    while IFS= read -r p; do
+      # Blank lines in the here-document are structure, not patterns.
+      [ -z "$p" ] && continue
+      # Reduce a glob to its literal prefix: src/api/** -> src/api/
+      prefix="${p%%\**}"
+      # A pattern that is nothing but a glob would match every changed file.
+      if [ -z "$prefix" ]; then
+        echo "check-docs: ignoring unbounded pattern '$p' in $doc" >&2
+        continue
+      fi
+      # Anchored: an unanchored match reports src/api/** as drifting because
+      # vendor/foo/src/api/x.ts changed.
+      if printf '%s\n' "$CHANGED" | grep -q -- "^$(escape_bre "$prefix")"; then
+        echo "DRIFT: $p changed but $doc was not updated" >&2
+        DRIFT_FOUND=1
+        STATUS=1
+        break
+      fi
+    done <<EOF
+$paths
+EOF
+  done
+fi
+
 if [ "$STATUS" -ne 0 ]; then
+  # Name what was actually found: STATUS=1 no longer implies drift.
+  if [ "$DRIFT_FOUND" -eq 1 ] && [ "$BROKEN_OPTIN" -eq 1 ]; then
+    FOUND_WHAT="drift and a broken covers_paths opt-in"
+  elif [ "$BROKEN_OPTIN" -eq 1 ]; then
+    FOUND_WHAT="a broken covers_paths opt-in"
+  else
+    FOUND_WHAT="drift"
+  fi
   if [ "$STRICT" = "1" ]; then
-    echo "check-docs: failing because STRICT=1." >&2
+    echo "check-docs: failing because STRICT=1; found ${FOUND_WHAT}." >&2
     exit 1
   fi
-  echo "check-docs: warnings only. Set STRICT=1 to make drift a hard failure." >&2
+  echo "check-docs: warnings only; found ${FOUND_WHAT}. Set STRICT=1 to make this a hard failure." >&2
   exit 0
 fi
 
-echo "check-docs: no drift against ${BASE}."
+if [ -n "$CHANGED" ]; then
+  echo "check-docs: no drift against ${BASE}."
+fi
 exit 0

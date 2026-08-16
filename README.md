@@ -22,6 +22,33 @@ To update later:
 The first refreshes the catalog; the second is what actually moves an installed plugin to the
 new version, and a restart of Claude Code applies it.
 
+### Installing for a project
+
+The commands above install at personal scope: one machine, one user. A repository can instead
+declare the marketplace and the plugin in its checked-in `.claude/settings.json`:
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "octonify": {
+      "source": {
+        "source": "github",
+        "repo": "octonify/claude-plugins"
+      }
+    }
+  },
+  "enabledPlugins": [
+    "project-memory@octonify"
+  ]
+}
+```
+
+`extraKnownMarketplaces` registers this catalog for everyone who clones the repository and trusts
+the folder — no `marketplace add` needed. `enabledPlugins` names the plugins the project uses.
+One caveat: as of Claude Code 2.1, a plugin from an external marketplace is not installed
+automatically by that declaration; each person runs `/plugin install project-memory@octonify`
+once, which works immediately because the marketplace is already registered.
+
 ## Plugins
 
 | Plugin | What it does | Install |

@@ -112,6 +112,14 @@ changes reach no installed user until it is bumped.
 
 ### Corrected
 
+- **The 0.1.0 entry below claimed that `protect-files.sh`'s `sed` fallback, together with the
+  backslash normalisation, made Windows paths match the protected patterns. Together those two
+  clauses claim more than the released code did.** Each clause is individually true, but the
+  normalisation only ever received a correctly unescaped path — which meant the `jq` branch. In
+  the `sed` fallback a JSON-escaped Windows path kept its doubled backslashes, matched no
+  protected pattern, and the write was allowed. That gap is what the `Fixed` entry above about
+  the fallback's JSON unescape closes. The claim is marked in place in the 0.1.0 entry rather
+  than deleted: released text is not quietly rewritten.
 - **The 0.1.0 entry below claimed that `check-staleness.sh` gained a base-ref fallback chain. It
   never had one, in any version.** The script takes no argument, names no ref, and compares each
   document against its own `basis_commit`. The claim is marked in place in the 0.1.0 entry rather
@@ -170,5 +178,10 @@ turning them into real files are listed in the repository's initial commit and s
 - `protect-files.sh` assumed `jq` was installed; a missing `jq` produced exit 127, which is neither
   block nor allow. It now falls back to a `sed` extraction and degrades to allow. It also
   normalises backslashes so Windows paths match the protected patterns.
+  **[Overstated, as written. Corrected under `Unreleased` → `Corrected`, 2026-08-16.]** The two
+  sentences are individually true, but together they claim the fallback matched Windows paths. It
+  did not: the normalisation only ever ran on a correctly unescaped path, which meant the `jq`
+  branch, and in the `sed` fallback a JSON-escaped Windows path was not matched and the write was
+  allowed.
 
 [0.1.0]: https://github.com/octonify/claude-plugins/releases/tag/project-memory--v0.1.0

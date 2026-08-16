@@ -95,6 +95,15 @@ changes reach no installed user until it is bumped.
   repository's own tooling is deliberately outside the drift check. The generated
   `03-architecture.md` carries that scope sentence so the decision survives the conversation.
 
+### Known defects
+
+- `protect-files.sh` matches its protected patterns as unanchored substrings: nothing ties a
+  pattern to a path boundary, so `vendor/x/docs/decisions/y.md` and `mydocs/decisions/y.md` are
+  both treated as protected by the pattern `docs/decisions/`. The effect is over-blocking — an
+  edit to an unrelated file whose path merely contains a protected string is refused, with a
+  message about decision immutability that does not apply to it. Low severity: the error is in
+  the safe direction and never allows a write it should block. Unfixed as of 2026-08-16.
+
 ### Corrected
 
 - **The 0.1.0 entry below claimed that `check-staleness.sh` gained a base-ref fallback chain. It

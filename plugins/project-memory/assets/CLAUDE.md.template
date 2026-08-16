@@ -6,29 +6,11 @@
 
 {{TWO_OR_THREE_SENTENCES: what the system does, for whom, and its lifecycle stage.}}
 
-## Hard rules
-
-1. Budgets: `CLAUDE.md` 200 lines, `docs/knowledge/*.md` 150 lines, ADRs 60 lines,
-   `.claude/rules/*.md` 100 lines. Over budget means split by topic or delete.
-2. Accepted decision records are never edited, with one exception: a dated, append-only note
-   under a trailing `## Notes` heading, recording a later observation or correcting a claim in
-   Context or Consequences that turned out to be false. A note may never change the Decision —
-   that still requires a superseding record. Nothing above `## Notes` is ever edited.
-3. Every non-obvious claim carries `[F]` fact / `[I]` inference / `[U]` unverified, plus a source
-   and a date: `[F, src/config/loader.ts:88, {{DATE}}]`.
-4. Contradictions go to `docs/knowledge/07-open-questions.md`. Do not resolve by guessing; the
-   disagreement is the finding.
-5. Do not document what can be derived from the code. No directory listings, no dependency lists.
-6. Commits follow Conventional Commits. Non-obvious implementation choices get a `Decision:`
-   trailer instead of a file.
-7. Create a knowledge file the day it has real content, not before.
-
 ## Conventions
 
-- Confidence markers: `[F]` fact, stated in a named source · `[I]` inference · `[U]` unverified.
-- Knowledge files carry a frontmatter header: `as_of`, `basis_commit`, `owner`, `review_trigger`,
-  `covers_paths`. `review_trigger` is an event, not a date.
 - {{BRANCHING_AND_REVIEW_CONVENTIONS}}
+- Documentation follows the methodology in `.claude/rules/project-memory.md` — budgets,
+  confidence markers, ADR immutability, commit format.
 
 ## Commands
 
@@ -50,6 +32,7 @@
 | why a local implementation choice was made | `git log --grep='^Decision:'` |
 | whether the docs drifted from the code | run `.githooks/check-docs.sh` |
 | how far behind the docs are | run `.githooks/check-staleness.sh` |
+| how to maintain these docs | `.claude/rules/project-memory.md` |
 {{ADD_A_ROW_ONLY_WHEN_THE_FILE_EXISTS}}
 
 ## Do not

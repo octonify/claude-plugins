@@ -84,6 +84,22 @@ Keep `CLAUDE.md` under 200 lines. Generate its routing table from the file set t
 created: a row exists because its target was written in this step, not because the template
 carried it. Do not copy the template's table and trim it afterwards.
 
+Alongside the four, **copy — do not author — the methodology rules file**:
+
+```bash
+mkdir -p .claude/rules
+cp "${CLAUDE_PLUGIN_ROOT}/assets/rules.md" .claude/rules/project-memory.md
+```
+
+It holds the documentation methodology — budgets, confidence markers, ADR immutability, the
+commit format — that earlier versions wrote into `CLAUDE.md` itself. `CLAUDE.md` is loaded every
+session and its 200-line budget belongs to the project's own rules, not to this plugin's; the
+rules file loads only when relevant. It ships unscoped, with no `paths:` frontmatter, on purpose:
+whether path-scoped rules fire when a matching file is *created* rather than read is undocumented,
+and an unscoped file cannot silently fail to load. It is a verbatim copy of a shipped asset, not
+one of the four authored files, and its routing-table row ("how to maintain these docs") exists
+because this step installed it.
+
 **ADR 0001 is the target project's decision to adopt this structure**, written from what step 2
 learned about that repository. It is not a description of this plugin: a record that would read
 identically in every repository is filler, the exact failure mode named at the top of this file.

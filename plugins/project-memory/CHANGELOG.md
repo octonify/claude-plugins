@@ -43,6 +43,15 @@ tag. macOS remains untested.
   project with `documentation/` or `doc/` instead still gets `docs/` — the path the checks depend
   on is constant, and the report says so. Scaffolds made by older versions keep their `scripts/`
   layout and keep working; the scripts never hardcoded their own location.
+- **The generated `CLAUDE.md` no longer carries this plugin's documentation methodology.** The
+  seven hard rules and the marker/frontmatter conventions move to a new shipped asset, installed
+  verbatim as `.claude/rules/project-memory.md` (unscoped — no `paths:` frontmatter — because
+  whether path-scoped rules fire on file creation is undocumented). `CLAUDE.md` keeps what is the
+  project's own: what it is, its commands, its branching conventions, the routing table, and the
+  `Do not` section. Rules 2 and 6 were moved rather than deleted, although both have a nominal
+  enforcer: `protect-files.sh` is installed only where step 7's offer was accepted, and ADR 0007
+  established that the `commit-msg` hook is feedback a clone must opt into, not enforcement — a
+  rule whose enforcement is optional or absent needs to be written down somewhere.
 - The `.gitattributes` lines `init` appends now name only paths this plugin writes —
   `.githooks/*` and `.claude/hooks/*.sh` — instead of a bare `*.sh`, which set line-ending policy
   for the project's own scripts.

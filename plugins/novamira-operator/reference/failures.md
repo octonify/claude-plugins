@@ -19,8 +19,9 @@ before treating the design as saved.
 Symptom: colors come back marked `inferred`; typography, spacing, rounding,
 components and dials are absent.
 Cause: the document used markdown headings instead of YAML front matter.
-Fix: see `design-system.md`. Always check `token_sources`, not just
-`readiness` — a document can be `ready: true` on guessed colors.
+Fix: see `${CLAUDE_PLUGIN_ROOT}/reference/design-system.md`. Always check
+`token_sources`, not just `readiness` — a document can be `ready: true` on
+guessed colors.
 
 **Skill written, then not invocable.**
 Symptom: `skill-write` returns `success: true` and `action: "created"`, but no
@@ -77,4 +78,4 @@ the auth method itself.
 - Registering post types, taxonomies or fields in PHP when a data-modeling
   plugin is active. The site's own instructions cover this; follow them.
 - Treating `check-design`'s `ok: true` as "all rules passed". Six structural
-  checks never run. See `design-system.md`.
+  checks never run. See `${CLAUDE_PLUGIN_ROOT}/reference/design-system.md`.

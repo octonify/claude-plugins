@@ -2,12 +2,18 @@
 
 Seven abilities. Storage is a custom post type. One design is active per site.
 
-## DESIGN.md is YAML front matter
+## Tokens come from YAML front matter
 
-Not markdown headings. Headings parse partially and dishonestly: colors are
+Not from markdown headings. A document that declares its colors and fonts
+under headings like `## Colors` parses partially and dishonestly: colors are
 captured but flagged `inferred`, and typography, spacing, rounding, components
-and dials are dropped with no error. The prose body below the front matter is
-rationale only — nothing is parsed from it.
+and dials are dropped with no error.
+
+**One section of the body is parsed: `## Do's and Don'ts`**, which populates
+`guidance.dos` and `guidance.donts`. It is a markdown section, not front
+matter, and it has a trap of its own — see
+`${CLAUDE_PLUGIN_ROOT}/reference/failures.md`. Everything else below the front
+matter is rationale and is not read.
 
 The built-in `novamira-design` skill on the site documents the full contract.
 Load it with `novamira/skill-get` before authoring a design. Do not guess the

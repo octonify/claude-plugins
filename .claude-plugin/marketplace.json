@@ -10,6 +10,11 @@
       "name": "project-memory",
       "source": "./plugins/project-memory",
       "description": "Scaffolds and audits a git-native long-term project memory structure: CLAUDE.md, arc42 knowledge docs, ADRs, Conventional Commits and drift checks."
+    },
+    {
+      "name": "novamira-operator",
+      "source": "./plugins/novamira-operator",
+      "description": "Operating knowledge for driving a WordPress site through the Novamira MCP plugin: transport differences, the DESIGN.md contract, skill authoring semantics, and failure modes that report success."
     }
   ]
 }

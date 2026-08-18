@@ -1,0 +1,19 @@
+{
+  "name": "novamira-operator",
+  "description": "Operating knowledge for driving a WordPress site through the Novamira MCP plugin: transport differences, the DESIGN.md contract, skill authoring semantics, and failure modes that report success.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Arwin",
+    "url": "https://github.com/octonify"
+  },
+  "homepage": "https://github.com/octonify/claude-plugins/tree/main/plugins/novamira-operator",
+  "repository": "https://github.com/octonify/claude-plugins",
+  "license": "MIT",
+  "keywords": [
+    "wordpress",
+    "mcp",
+    "novamira",
+    "design-system",
+    "skills"
+  ]
+}

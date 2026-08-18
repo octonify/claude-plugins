@@ -54,6 +54,7 @@ once, which works immediately because the marketplace is already registered.
 | Plugin | What it does | Install |
 |---|---|---|
 | `project-memory` | Scaffolds and audits a git-native long-term project memory structure: `CLAUDE.md`, arc42 knowledge docs, ADRs, Conventional Commits and drift checks. Skills: `/project-memory:init`, `/project-memory:audit`. | `/plugin install project-memory@octonify` |
+| `novamira-operator` | Operating knowledge for driving a WordPress site through the Novamira MCP plugin: transport differences, the `DESIGN.md` contract, skill authoring semantics, and failure modes that report success. Skill: `/novamira-operator:operate`. | `/plugin install novamira-operator@octonify` |
 
 ## Status of `project-memory`
 

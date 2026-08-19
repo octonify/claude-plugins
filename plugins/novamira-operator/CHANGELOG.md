@@ -8,9 +8,11 @@ below. Without that bump, no installed user receives the change.
 
 ## [Unreleased]
 
-Not yet released. `version` is `0.1.0` in `.claude-plugin/plugin.json`, but no
-`novamira-operator--v0.1.0` tag exists and the plugin has not been merged to `main`, so nothing
-here has reached an installed user.
+## [0.1.0] — 2026-08-19
+
+First release. Every behavioural claim in this plugin was verified against a live Novamira
+installation rather than taken from documentation; see the Status section in the repository
+README for what that evidence base does and does not cover.
 
 ### Added
 
@@ -28,3 +30,5 @@ here has reached an installed user.
 - `reference/skills-api.md`: the four skill abilities, the three server-side mutations
   `skill-write` performs on what you send, the `on_conflict` modes and which of them are
   untested, and why a skill you just created is not invocable until the client reconnects.
+
+[0.1.0]: https://github.com/octonify/claude-plugins/releases/tag/novamira-operator--v0.1.0

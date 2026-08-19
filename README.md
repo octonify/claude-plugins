@@ -56,7 +56,9 @@ once, which works immediately because the marketplace is already registered.
 | `project-memory` | Scaffolds and audits a git-native long-term project memory structure: `CLAUDE.md`, arc42 knowledge docs, ADRs, Conventional Commits and drift checks. Skills: `/project-memory:init`, `/project-memory:audit`. | `/plugin install project-memory@octonify` |
 | `novamira-operator` | Operating knowledge for driving a WordPress site through the Novamira MCP plugin: transport differences, the `DESIGN.md` contract, skill authoring semantics, and failure modes that report success. Skill: `/novamira-operator:operate`. | `/plugin install novamira-operator@octonify` |
 
-## Status of `project-memory`
+## Status
+
+### `project-memory`
 
 **Experimental, version `0.3.0`.** The documentation architecture it installs is assembled from
 published conventions — arc42, Nygard ADRs, Conventional Commits — but the way they are combined
@@ -67,6 +69,26 @@ time. The version number says so on purpose.
 The shipped scripts have been executed against a scratch repository, against this one, and on
 Linux (GNU bash 5.2.21, git 2.43.0, with `jq` present and absent). The architecture they enforce
 has not been through a year of maintenance.
+
+### `novamira-operator`
+
+**Experimental, version `0.1.0`.** Unlike a plugin assembled from published conventions, every
+behavioural claim here was verified by calling a live Novamira installation and reading what came
+back: the transport differences, the `DESIGN.md` contract, the skill-authoring semantics, and each
+failure mode. Several of those failures report success while losing your work, which is why they
+are written down.
+
+The evidence base is real and narrow. One WordPress site, on one host, on one Novamira version,
+with Novamira Pro active and a specific theme and page builder installed. Behaviour that is
+structural — what each transport reaches, what the design parser accepts, what `skill-write` does
+to what you send — should hold anywhere. Anything that depends on the host, the installed plugins,
+or a Novamira release later than the one tested may not. The plugin deliberately ships no ability
+inventory for that reason: discovery returns it in one call, always current, and a bundled copy
+would go stale within weeks.
+
+The skill's trigger description has not been tuned against real use. It errs toward firing, on the
+reasoning that a false positive costs a few hundred tokens and a false negative costs the whole
+point of the plugin.
 
 ## Releasing
 
